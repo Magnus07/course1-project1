@@ -11,11 +11,169 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>QWESDA</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QTreeWidget" name="treeWidget">
+        <column>
+         <property name="text">
+          <string notr="true">1</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="header">
+        <property name="font">
+         <font>
+          <pointsize>36</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Для початку роботи створіть новий
+або відкрийте існуючий файл</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="subheader">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>24</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">hide:true</string>
+        </property>
+        <property name="text">
+         <string>Вкажіть ім'я файлу</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Створити</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menunfdnfdnfd">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="action_6"/>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Робота</string>
+    </property>
+    <widget class="QMenu" name="menu_2">
+     <property name="title">
+      <string>Додати</string>
+     </property>
+     <addaction name="action_7"/>
+     <addaction name="action_8"/>
+     <addaction name="action_9"/>
+     <addaction name="action_10"/>
+    </widget>
+    <addaction name="action_3"/>
+    <addaction name="menu_2"/>
+    <addaction name="action_5"/>
+   </widget>
+   <addaction name="menunfdnfdnfd"/>
+   <addaction name="menu"/>
+  </widget>
+  <action name="action">
+   <property name="text">
+    <string>Відкрити</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Зберегти</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>Пошук</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Видалити</string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>Створити новий</string>
+   </property>
+  </action>
+  <action name="action_7">
+   <property name="text">
+    <string>Місто</string>
+   </property>
+  </action>
+  <action name="action_8">
+   <property name="text">
+    <string>Магазин</string>
+   </property>
+  </action>
+  <action name="action_9">
+   <property name="text">
+    <string>Товар</string>
+   </property>
+  </action>
+  <action name="action_10">
+   <property name="text">
+    <string>Країну</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
