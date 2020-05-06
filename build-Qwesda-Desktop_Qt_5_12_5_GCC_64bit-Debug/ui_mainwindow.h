@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
@@ -38,7 +39,6 @@ public:
     QAction *action_7;
     QAction *action_8;
     QAction *action_9;
-    QAction *action_10;
     QWidget *centralwidget;
     QHBoxLayout *horizontalLayout;
     QGridLayout *gridLayout_2;
@@ -46,7 +46,14 @@ public:
     QVBoxLayout *verticalLayout;
     QLabel *header;
     QLabel *subheader;
+    QComboBox *comboBox;
+    QComboBox *comboBox_2;
+    QLineEdit *lineEdit_2;
+    QLineEdit *lineEdit_3;
+    QLineEdit *lineEdit_4;
     QLineEdit *lineEdit;
+    QLineEdit *lineEdit_5;
+    QLineEdit *lineEdit_6;
     QPushButton *pushButton;
     QMenuBar *menubar;
     QMenu *menunfdnfdnfd;
@@ -57,7 +64,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(800, 600);
+        MainWindow->resize(932, 600);
         action = new QAction(MainWindow);
         action->setObjectName(QString::fromUtf8("action"));
         action_2 = new QAction(MainWindow);
@@ -74,8 +81,6 @@ public:
         action_8->setObjectName(QString::fromUtf8("action_8"));
         action_9 = new QAction(MainWindow);
         action_9->setObjectName(QString::fromUtf8("action_9"));
-        action_10 = new QAction(MainWindow);
-        action_10->setObjectName(QString::fromUtf8("action_10"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         horizontalLayout = new QHBoxLayout(centralwidget);
@@ -115,13 +120,55 @@ public:
 
         verticalLayout->addWidget(subheader);
 
-        lineEdit = new QLineEdit(centralwidget);
-        lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
+        comboBox = new QComboBox(centralwidget);
+        comboBox->setObjectName(QString::fromUtf8("comboBox"));
         QFont font2;
         font2.setPointSize(14);
+        comboBox->setFont(font2);
+
+        verticalLayout->addWidget(comboBox);
+
+        comboBox_2 = new QComboBox(centralwidget);
+        comboBox_2->setObjectName(QString::fromUtf8("comboBox_2"));
+        comboBox_2->setFont(font2);
+
+        verticalLayout->addWidget(comboBox_2);
+
+        lineEdit_2 = new QLineEdit(centralwidget);
+        lineEdit_2->setObjectName(QString::fromUtf8("lineEdit_2"));
+        lineEdit_2->setFont(font2);
+
+        verticalLayout->addWidget(lineEdit_2);
+
+        lineEdit_3 = new QLineEdit(centralwidget);
+        lineEdit_3->setObjectName(QString::fromUtf8("lineEdit_3"));
+        lineEdit_3->setFont(font2);
+
+        verticalLayout->addWidget(lineEdit_3);
+
+        lineEdit_4 = new QLineEdit(centralwidget);
+        lineEdit_4->setObjectName(QString::fromUtf8("lineEdit_4"));
+        lineEdit_4->setFont(font2);
+
+        verticalLayout->addWidget(lineEdit_4);
+
+        lineEdit = new QLineEdit(centralwidget);
+        lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
         lineEdit->setFont(font2);
 
         verticalLayout->addWidget(lineEdit);
+
+        lineEdit_5 = new QLineEdit(centralwidget);
+        lineEdit_5->setObjectName(QString::fromUtf8("lineEdit_5"));
+        lineEdit_5->setFont(font2);
+
+        verticalLayout->addWidget(lineEdit_5);
+
+        lineEdit_6 = new QLineEdit(centralwidget);
+        lineEdit_6->setObjectName(QString::fromUtf8("lineEdit_6"));
+        lineEdit_6->setFont(font2);
+
+        verticalLayout->addWidget(lineEdit_6);
 
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
@@ -137,7 +184,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 800, 22));
+        menubar->setGeometry(QRect(0, 0, 932, 22));
         menunfdnfdnfd = new QMenu(menubar);
         menunfdnfdnfd->setObjectName(QString::fromUtf8("menunfdnfdnfd"));
         menu = new QMenu(menubar);
@@ -157,7 +204,6 @@ public:
         menu_2->addAction(action_7);
         menu_2->addAction(action_8);
         menu_2->addAction(action_9);
-        menu_2->addAction(action_10);
 
         retranslateUi(MainWindow);
 
@@ -175,10 +221,12 @@ public:
         action_7->setText(QApplication::translate("MainWindow", "\320\234\321\226\321\201\321\202\320\276", nullptr));
         action_8->setText(QApplication::translate("MainWindow", "\320\234\320\260\320\263\320\260\320\267\320\270\320\275", nullptr));
         action_9->setText(QApplication::translate("MainWindow", "\320\242\320\276\320\262\320\260\321\200", nullptr));
-        action_10->setText(QApplication::translate("MainWindow", "\320\232\321\200\320\260\321\227\320\275\321\203", nullptr));
         header->setText(QApplication::translate("MainWindow", "\320\224\320\273\321\217 \320\277\320\276\321\207\320\260\321\202\320\272\321\203 \321\200\320\276\320\261\320\276\321\202\320\270 \321\201\321\202\320\262\320\276\321\200\321\226\321\202\321\214 \320\275\320\276\320\262\320\270\320\271\n"
 "\320\260\320\261\320\276 \320\262\321\226\320\264\320\272\321\200\320\270\320\271\321\202\320\265 \321\226\321\201\320\275\321\203\321\216\321\207\320\270\320\271 \321\204\320\260\320\271\320\273", nullptr));
         subheader->setText(QApplication::translate("MainWindow", "\320\222\320\272\320\260\320\266\321\226\321\202\321\214 \321\226\320\274'\321\217 \321\204\320\260\320\271\320\273\321\203", nullptr));
+        lineEdit_2->setPlaceholderText(QApplication::translate("MainWindow", "\320\275\320\260\320\267\320\262\320\260", nullptr));
+        lineEdit_3->setPlaceholderText(QApplication::translate("MainWindow", "\321\200\320\265\320\263\321\226\320\276\320\275", nullptr));
+        lineEdit_4->setPlaceholderText(QApplication::translate("MainWindow", "\320\277\320\276\321\210\321\202\320\276\320\262\320\270\320\271 \321\226\320\275\320\264\320\265\320\272\321\201", nullptr));
         pushButton->setText(QApplication::translate("MainWindow", "\320\241\321\202\320\262\320\276\321\200\320\270\321\202\320\270", nullptr));
         menunfdnfdnfd->setTitle(QApplication::translate("MainWindow", "\320\244\320\260\320\271\320\273", nullptr));
         menu->setTitle(QApplication::translate("MainWindow", "\320\240\320\276\320\261\320\276\321\202\320\260", nullptr));

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <core.h>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,8 +22,17 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_action_7_triggered();
+
+    void on_action_8_triggered();
+
+    void on_action_9_triggered();
+
+    void on_comboBox_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     void makeInvisible();
+    void refreshTreeView();
 };
 #endif // MAINWINDOW_H

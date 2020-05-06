@@ -10,13 +10,13 @@
 
 using namespace std;
 
-typedef int (*TfuncCmp)(void *p, string key);
+typedef int (*TfuncCmp)(void *p, QString key);
 // опис типу структури для елемента - City
 typedef struct
 {
     QString name;
     QString region;
-    int    postcode;
+    uint    postcode;
     void** sublev;  // вказівник на підсписок stores
 }TCity;
 
@@ -33,11 +33,20 @@ typedef struct
 typedef struct
 {
     QString name;
-    short  id;
+    ushort  id;
     QString category;
     QString description;
-    short  count;
-    short  price;
+    ushort  count;
+    float  price;
 } TProduct;
+
+// headers
+void ** InitArray();
+void addToSort(void** &start,  void* pnew, int posAdd);
+void FindElList(void** start,  QString key, int &posFndEl, bool &findOK, TfuncCmp pFunc);
+
+int cmpCity(void* p, QString key);
+int cmpStore(void *p, QString key);
+int cmpProduct(void *p, QString key);
 
 #endif // CORE_H
