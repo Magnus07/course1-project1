@@ -5,6 +5,7 @@
 // 11 - add city screen
 // 12 - add store screen
 // 13 - add product screen
+// 20 - remove element screen
 ushort tab = 0;
 void ** Start = InitArray();
 
@@ -79,9 +80,11 @@ void MainWindow::makeInvisible()
     ui->lineEdit_6->setVisible(false);
     ui->comboBox->setVisible(false);
     ui->comboBox_2->setVisible(false);
+    ui->comboBox_3->setVisible(false);
 
     ui->comboBox->clear();
     ui->comboBox_2->clear();
+    ui->comboBox_3->clear();
     ui->lineEdit_2->clear();
     ui->lineEdit_3->clear();
     ui->lineEdit_4->clear();
@@ -98,7 +101,7 @@ void MainWindow::on_action_6_triggered()
 
 void MainWindow::on_pushButton_clicked()
 {
-    if ((tab == 12 || tab == 13) && (ui->comboBox->currentText() == "" || ui->comboBox_2->currentText() == ""))
+    if (((tab == 12 && ui->comboBox->currentText() == "")) || (tab == 13 && ((ui->comboBox->currentText() == "") || (ui->comboBox_2->currentText() == ""))))
     {
         QMessageBox *message = new QMessageBox(QMessageBox::Warning, "Warning",  "Створіть, будь ласка, елементи на попередніх етапах, аби мати можливість працювати з ними на цьому!");
         message->setStandardButtons(QMessageBox::Ok);
@@ -155,6 +158,37 @@ void MainWindow::on_pushButton_clicked()
         FindElList(((TStore*)(s[pos]))->sublev, ((TProduct *)product)->name, posProduct, fndProduct, cmpProduct);
 
         addToSort(((TStore*)s[pos])->sublev, product, posProduct);
+    }
+
+    if (tab == 20)
+    {
+        int pos; bool fnd;
+        if (ui->comboBox_2->currentText() == "null")
+        {
+            FindElList(Start, ui->comboBox->currentText(),pos, fnd, cmpCity);
+            delEl(Start, pos, 3);
+            ui->comboBox->removeItem(ui->comboBox->currentIndex());
+        }
+        else if (ui->comboBox_3->currentText() == "null")
+        {
+            FindElList(Start, ui->comboBox->currentText(),pos, fnd, cmpCity);
+            void ** s = (void**)(((TCity*)Start[pos])->sublev); // go to the next level
+            int spos;bool sfound;
+            FindElList(((TCity*)Start[pos])->sublev, ui->comboBox_2->currentText(), spos, sfound, cmpStore);
+            delEl(((TCity*)Start[pos])->sublev, spos, 2);
+            ui->comboBox_2->removeItem(ui->comboBox_2->currentIndex());
+        }
+        else
+        {
+            FindElList(Start, ui->comboBox->currentText(),pos, fnd, cmpCity);
+            void ** s = (void**)(((TCity*)Start[pos])->sublev); // go to the next level
+            int spos;bool sfound;
+            FindElList(((TCity*)Start[pos])->sublev, ui->comboBox_2->currentText(), spos, sfound, cmpStore);
+            int ppos;bool pfound;
+            FindElList(((TStore*)(((TCity*)Start[pos])->sublev[spos]))->sublev, ui->comboBox_3->currentText(), ppos, pfound, cmpProduct);
+            delEl(((TStore*)(((TCity*)Start[pos])->sublev[spos]))->sublev, ppos, 1);
+            ui->comboBox_3->removeItem(ui->comboBox_3->currentIndex());
+        }
     }
 
     refreshTreeView();
@@ -242,13 +276,108 @@ void MainWindow::on_action_9_triggered()
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 {
     int pos; bool fnd;
+    ui->comboBox_2->clear();
     FindElList(Start,arg1,pos,fnd,cmpCity);
-    if (tab == 13)
+    if (tab == 13 || tab == 20)
     {
-        void ** s = (void**)(((TCity*)Start[pos])->sublev);
-        for (int i = 0; i < ((int*)(s))[POS_CNT]; i++)
+        if (fnd)
         {
-            ui->comboBox_2->insertItem(i, ((TStore*)(s[i]))->name);
+            void ** s = (void**)(((TCity*)Start[pos])->sublev);
+            for (int i = 0; i < ((int*)(s))[POS_CNT]; i++)
+            {
+                ui->comboBox_2->insertItem(i, ((TStore*)(s[i]))->name);
+            }
+            if (tab == 20)
+            {
+                ui->comboBox_2->addItem("null");
+            }
         }
     }
+}
+
+void MainWindow::on_action_5_triggered()
+{
+    makeInvisible();
+
+    tab = 20;
+
+    ui->comboBox->setVisible(true);
+    ui->comboBox_2->setVisible(true);
+    ui->comboBox_3->setVisible(true);
+
+    ui->treeWidget->setVisible(true);
+    ui->comboBox->clear();
+    for (int i = 0; i < ((int*)Start)[POS_CNT]; i++)
+    {
+        ui->comboBox->insertItem(i,QString(((TCity*)Start[i])->name));
+    }
+
+    ui->pushButton->setVisible(true);
+    ui->pushButton->setText("Вилучити");
+}
+
+void MainWindow::on_comboBox_2_currentTextChanged(const QString &arg1)
+{
+    int pos; bool fnd;
+    ui->comboBox_3->clear();
+    FindElList(Start,ui->comboBox->currentText(),pos,fnd,cmpCity);
+    if (tab == 20)
+    {
+        if (fnd)
+        {
+            void ** s = (void**)(((TCity*)Start[pos])->sublev);
+            FindElList(s,ui->comboBox_2->currentText(), pos,fnd, cmpStore);
+            if (fnd)
+            {
+                void ** p = (void**)(((TStore*)s[pos])->sublev);
+                for (int i = 0; i < ((int*)(p))[POS_CNT]; i++)
+                {
+                    ui->comboBox_3->insertItem(i, ((TProduct*)(p[i]))->name);
+                }
+                ui->comboBox_3->addItem("null");
+            }
+        }
+    }
+}
+
+
+//mode 1 - product
+//mode 2 - store
+//mode 3 - city
+void delEl(void** &start,  int posFnd, int mode)
+{
+    if (mode == 3)
+    {
+        void ** s = (((TCity*)start[posFnd])->sublev);
+        for (int j = 0; j < ((int*)(s))[POS_CNT];j++)
+        {
+            void * * p = (((TStore*)s[j])->sublev);
+            for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
+            {
+                delete ((TProduct*)p[k]);
+            }
+            delete (TStore*)s[j];
+        }
+    }
+    else if (mode == 2)
+    {
+            void * * p = (((TStore*)start[posFnd])->sublev);
+            for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
+            {
+                delete ((TProduct*)p[k]);
+            }
+    }
+
+    if (1 == ((int*)start)[POS_CNT])
+    {
+        delete *start;
+        start = InitArray();
+        return;
+    }
+
+    for (int i = posFnd; i < ((int*)start)[POS_CNT];i++)
+    {
+        ((void**)start)[i] = ((void**)start)[i+1];
+    }
+    ((int*)start)[POS_CNT]--;
 }

@@ -44,6 +44,7 @@ typedef struct
 void ** InitArray();
 void addToSort(void** &start,  void* pnew, int posAdd);
 void FindElList(void** start,  QString key, int &posFndEl, bool &findOK, TfuncCmp pFunc);
+void delEl(void** &start,  int posFnd, int mode);
 
 int cmpCity(void* p, QString key);
 int cmpStore(void *p, QString key);

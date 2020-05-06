@@ -48,6 +48,7 @@ public:
     QLabel *subheader;
     QComboBox *comboBox;
     QComboBox *comboBox_2;
+    QComboBox *comboBox_3;
     QLineEdit *lineEdit_2;
     QLineEdit *lineEdit_3;
     QLineEdit *lineEdit_4;
@@ -134,6 +135,12 @@ public:
 
         verticalLayout->addWidget(comboBox_2);
 
+        comboBox_3 = new QComboBox(centralwidget);
+        comboBox_3->setObjectName(QString::fromUtf8("comboBox_3"));
+        comboBox_3->setFont(font2);
+
+        verticalLayout->addWidget(comboBox_3);
+
         lineEdit_2 = new QLineEdit(centralwidget);
         lineEdit_2->setObjectName(QString::fromUtf8("lineEdit_2"));
         lineEdit_2->setFont(font2);
@@ -216,7 +223,7 @@ public:
         action->setText(QApplication::translate("MainWindow", "\320\222\321\226\320\264\320\272\321\200\320\270\321\202\320\270", nullptr));
         action_2->setText(QApplication::translate("MainWindow", "\320\227\320\261\320\265\321\200\320\265\320\263\321\202\320\270", nullptr));
         action_3->setText(QApplication::translate("MainWindow", "\320\237\320\276\321\210\321\203\320\272", nullptr));
-        action_5->setText(QApplication::translate("MainWindow", "\320\222\320\270\320\264\320\260\320\273\320\270\321\202\320\270", nullptr));
+        action_5->setText(QApplication::translate("MainWindow", "\320\222\320\270\320\273\321\203\321\207\320\270\321\202\320\270", nullptr));
         action_6->setText(QApplication::translate("MainWindow", "\320\241\321\202\320\262\320\276\321\200\320\270\321\202\320\270 \320\275\320\276\320\262\320\270\320\271", nullptr));
         action_7->setText(QApplication::translate("MainWindow", "\320\234\321\226\321\201\321\202\320\276", nullptr));
         action_8->setText(QApplication::translate("MainWindow", "\320\234\320\260\320\263\320\260\320\267\320\270\320\275", nullptr));
