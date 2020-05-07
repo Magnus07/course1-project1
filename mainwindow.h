@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <core.h>
 #include <QMessageBox>
+#include <QTreeWidgetItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -28,11 +29,15 @@ private slots:
 
     void on_action_9_triggered();
 
-    void on_comboBox_currentIndexChanged(const QString &arg1);
+//    void on_comboBox_currentIndexChanged(const QString &arg1);
 
     void on_action_5_triggered();
 
     void on_comboBox_2_currentTextChanged(const QString &arg1);
+
+    void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
+
+    void on_comboBox_currentTextChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;

@@ -65,7 +65,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(932, 600);
+        MainWindow->resize(932, 631);
         action = new QAction(MainWindow);
         action->setObjectName(QString::fromUtf8("action"));
         action_2 = new QAction(MainWindow);
@@ -93,6 +93,7 @@ public:
         __qtreewidgetitem->setText(0, QString::fromUtf8("1"));
         treeWidget->setHeaderItem(__qtreewidgetitem);
         treeWidget->setObjectName(QString::fromUtf8("treeWidget"));
+        treeWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
         gridLayout_2->addWidget(treeWidget, 0, 0, 1, 1);
 
