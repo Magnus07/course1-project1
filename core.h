@@ -2,6 +2,7 @@
 #define CORE_H
 
 #include <QApplication>
+#include <exception>
 
 #define POS_CNT      -1
 #define POS_SZ       -2

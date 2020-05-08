@@ -39,6 +39,8 @@ private slots:
 
     void on_comboBox_currentTextChanged(const QString &arg1);
 
+    void on_action_3_triggered();
+
 private:
     Ui::MainWindow *ui;
     void makeInvisible();
