@@ -46,6 +46,8 @@ private slots:
 
     void on_action_10_triggered();
 
+    void on_action_11_triggered();
+    
 private:
     Ui::MainWindow *ui;
     void makeInvisible();

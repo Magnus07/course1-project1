@@ -3,6 +3,8 @@
 
 #include <QApplication>
 #include <exception>
+#include <queue>
+#include <stack>
 
 #define POS_CNT      -1
 #define POS_SZ       -2

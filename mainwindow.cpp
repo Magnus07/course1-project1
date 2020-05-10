@@ -99,6 +99,7 @@ void MainWindow::makeInvisible()
     ui->comboBox->setVisible(false);
     ui->comboBox_2->setVisible(false);
     ui->comboBox_3->setVisible(false);
+    ui->tableWidget->setVisible(false);
 
     ui->comboBox->clear();
     ui->comboBox_2->clear();
@@ -106,6 +107,7 @@ void MainWindow::makeInvisible()
     ui->lineEdit_2->clear();
     ui->lineEdit_3->clear();
     ui->lineEdit_4->clear();
+    ui->tableWidget->clear();
 }
 
 
@@ -697,4 +699,201 @@ void MainWindow::on_action_3_triggered()
 
     ui->pushButton->setVisible(true);
     ui->pushButton->setText("Пошук");
+}
+
+
+template <typename T>
+struct Rating
+{
+    T item;
+    double  cost;
+};
+
+struct toLower {
+    bool operator()(Rating<QTreeWidgetItem*> const& p1, Rating<QTreeWidgetItem*> const& p2)
+    {
+        return p1.cost < p2.cost;
+    }
+};
+
+
+struct toHigher {
+    bool operator()(Rating<QTreeWidgetItem*> const& p1, Rating<QTreeWidgetItem*> const& p2)
+    {
+        return p1.cost > p2.cost;
+    }
+};
+
+// sort things function
+template <typename T>
+void MainWindow::sortThings()
+{
+    int cnt=((int*)Start)[POS_CNT];
+    std::priority_queue<Rating<QTreeWidgetItem*>, std::vector<Rating<QTreeWidgetItem *>>, T> sorted;
+
+    for (int i = 0; i <cnt; i++) // loop
+    {   // output third level
+
+        void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+        for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
+        {   // store item
+
+            void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
+            for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
+            {   // create product item
+
+                QTreeWidgetItem * itm = new QTreeWidgetItem();
+                // setting text to item
+                itm->setText(1, ((TCity*)Start[i])->name + "\n" + ((TCity*)Start[i])->region + "\n" + QString::number(((TCity*)Start[i])->postcode));
+
+                QTreeWidgetItem * store = new QTreeWidgetItem();
+                // set text
+                store->setText(2, ((TStore*)s[j])->name + "\n" + ((TStore*)s[j])->adress + "\n" + (((TStore*)s[j])->phnumber));
+                // make it expanded
+                store->setExpanded(true);
+                itm->addChild(store); // add child
+
+                QTreeWidgetItem * product = new QTreeWidgetItem();
+                float cost = QString::number(((TProduct*)p[k])->price).toFloat();
+                // set text to it
+                product->setText(3, ((TProduct*)p[k])->name + "\n" + QString::number(((TProduct*)p[k])->id) + "\n" + (((TProduct*)p[k])->category) + "\n" + ((TProduct*)p[k])->description + "\n" + QString::number(((TProduct*)p[k])->count) + "\n" + QString::number(((TProduct*)p[k])->price) + "$");
+                // make it expanded
+                product->setExpanded(true);
+                store->addChild(product); // add child
+
+                Rating<QTreeWidgetItem*> item;
+                item.item = itm;
+                item.cost = cost;
+
+                sorted.push(item);
+            }
+        }
+    }
+
+    ui->treeWidget->clear();
+
+    // create top item pointer
+    QTreeWidgetItem *topItem = new QTreeWidgetItem();
+    topItem->setText(0,"Ukraine");
+
+    // configure headers
+    QStringList headers;
+    headers.append("країна");
+    headers.append("місто");
+    headers.append("магазин");
+    headers.append("товар");
+
+    // set headers
+    ui->treeWidget->setHeaderLabels(headers);
+
+
+    for (;sorted.size() != 0;)
+    {
+        topItem->addChild(sorted.top().item);
+        sorted.pop();
+    }
+
+    ui->treeWidget->addTopLevelItem(topItem);
+
+}
+
+
+void MainWindow::on_action_4_triggered()
+{
+   makeInvisible();
+
+   refreshTreeView();
+}
+
+//   ui->treeWidget->setVisible(true);
+//   ui->tableWidget->setVisible(true);
+//   ui->tableWidget->setColumnCount(2);
+
+//   QStringList heads;
+//   heads.append("магазин");
+//   heads.append("капітал");
+
+//   ui->subheader->setVisible(true);
+
+//   ui->subheader->setText("Запаси магазинів: ");
+
+//   int cnt=((int*)Start)[POS_CNT];
+
+//   std::priority_queue<Rating, std::vector<Rating>, toLower> rating;
+
+//    // create top item pointer
+//    QTreeWidgetItem *topItem = new QTreeWidgetItem();
+//    topItem->setText(0,"Ukraine");
+
+//   for (int i = 0; i <cnt; i++) // loop
+//   {   // output third level
+
+//       void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+//       for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
+//       {   // store item
+//           double summary = 0;
+//           Rating item;
+
+//           QList<QTreeWidgetItem*> store = ui->treeWidget->findItems(((TStore*)s[j])->name + "\n" + ((TStore*)s[j])->adress + "\n" + (((TStore*)s[j])->phnumber), Qt::MatchContains | Qt::MatchRecursive ,2);
+
+//            if (store.length() > 0)
+//                store[0]->parent()->parent()->removeChild(store[0]->parent());
+
+//           item.item = store[0];
+
+//           void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
+//           for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
+//           {
+//               summary += ((TProduct*)p[k])->count * ((TProduct*)p[k])->price;
+//           }
+//           item.cost = summary;
+//           rating.push(item);
+//        }
+//    }
+
+//   ui->tableWidget->setRowCount(rating.size());
+
+//    std::stack<QTreeWidgetItem*> items;
+//   for (int i = 0;rating.size() != 0;i++)
+//   {
+//       Rating rate = rating.top();
+//       items.push(rate.item);
+//       rating.pop();
+
+//       topItem->addChild(items.top()->parent());
+
+//       QTableWidgetItem * column1 = new QTableWidgetItem();
+//       column1->setText(rate.item->text(2).split("\n")[0]);
+
+//       QTableWidgetItem * column2 = new QTableWidgetItem();
+//       column2->setText(QString::number(rate.cost) + "$");
+
+//       ui->tableWidget->setItem(i,0, column1);
+//       ui->tableWidget->setItem(i,1,column2);
+//   }
+
+//   ui->treeWidget->clear();
+
+
+//   // configure headers
+//   QStringList headers;
+//   headers.append("країна");
+//   headers.append("місто");
+//   headers.append("магазин");
+//   headers.append("товар");
+
+//   ui->treeWidget->setHeaderLabels(headers);
+
+//   ui->treeWidget->addTopLevelItem(topItem);
+//}
+
+
+void MainWindow::on_action_10_triggered()
+{
+    sortThings<toHigher>();
+}
+
+void MainWindow::on_action_11_triggered()
+{
+    sortThings<toLower>();
 }
