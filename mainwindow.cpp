@@ -10,6 +10,8 @@
 // 32 - edit store
 // 33 - edit product
 // 40 - search screen
+// 51 - search in range screen
+// 52 - search among cities or stores screen
 ushort tab = 0;
 void ** Start = InitArray();
 
@@ -100,13 +102,20 @@ void MainWindow::makeInvisible()
     ui->comboBox_2->setVisible(false);
     ui->comboBox_3->setVisible(false);
     ui->tableWidget->setVisible(false);
+    ui->scrollArea->setVisible(false);
+}
 
+void MainWindow::cleanUp()
+{
     ui->comboBox->clear();
+    ui->lineEdit->clear();
     ui->comboBox_2->clear();
     ui->comboBox_3->clear();
     ui->lineEdit_2->clear();
     ui->lineEdit_3->clear();
     ui->lineEdit_4->clear();
+    ui->lineEdit_5->clear();
+    ui->lineEdit_6->clear();
     ui->tableWidget->clear();
 }
 
@@ -357,6 +366,53 @@ void MainWindow::on_pushButton_clicked()
             ui->treeWidget->takeTopLevelItem(i);
         // adding top level items
         ui->treeWidget->addTopLevelItem(topItem);
+    }
+    if (tab == 51)
+    {
+        makeInvisible();
+        ui->treeWidget->setVisible(true);
+
+        QTreeWidgetItem * top = new QTreeWidgetItem();
+        top->setText(0,"Ukraine");
+        ui->treeWidget->takeTopLevelItem(0);
+
+        int cnt=((int*)Start)[POS_CNT];
+
+        for (int i = 0; i <cnt; i++) // loop
+        {   // output third level
+            QTreeWidgetItem * itm = new QTreeWidgetItem();
+            // setting text to item
+            itm->setText(1, ((TCity*)Start[i])->name + "\n" + ((TCity*)Start[i])->region + "\n" + QString::number(((TCity*)Start[i])->postcode));
+
+            void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+            for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
+            {   // store item
+                QTreeWidgetItem * store = new QTreeWidgetItem();
+                // set text
+                store->setText(2, ((TStore*)s[j])->name + "\n" + ((TStore*)s[j])->adress + "\n" + (((TStore*)s[j])->phnumber));
+
+                void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
+                for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
+                {   // create product item
+                    if (((TProduct*)p[k])->price > ui->lineEdit_2->text().toFloat() && ((TProduct*)p[k])->price < ui->lineEdit->text().toFloat())
+                    {
+                        QTreeWidgetItem * product = new QTreeWidgetItem();
+                        // set text to it
+                        product->setText(3, ((TProduct*)p[k])->name + "\n" + QString::number(((TProduct*)p[k])->id) + "\n" + (((TProduct*)p[k])->category) + "\n" + ((TProduct*)p[k])->description + "\n" + QString::number(((TProduct*)p[k])->count) + "\n" + QString::number(((TProduct*)p[k])->price) + "$");
+                        store->addChild(product);
+                    }
+                }
+                if (store->childCount()!=0)
+                {
+                    itm->addChild(store);
+                }
+            }
+            if (itm->childCount()!=0)
+            {
+                top->addChild(itm);
+            }
+        }
+        ui->treeWidget->addTopLevelItem(top);
     }
 }
 
@@ -677,6 +733,36 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
             ui->lineEdit_6->setPlaceholderText("ціна з 1 шт у долярах");
         }
     }
+    if (tab == 52)
+    {
+        int cnt=((int*)Start)[POS_CNT];
+        QVBoxLayout * lay = new QVBoxLayout(this);
+        QLayoutItem * child;
+        while ((child = lay->takeAt(0)) != 0) {
+            delete child;
+        }
+        if (ui->comboBox->currentText() == "міста")
+        {
+            for (int i = 0; i <cnt; i++) // loop
+            {
+                QCheckBox *ch = new QCheckBox(((TCity*)Start[i])->name);
+                lay->addWidget(ch);
+            }
+        }
+        else if (ui->comboBox->currentText() == "магазини")
+        {
+            for (int i = 0; i <cnt; i++) // loop
+            {
+                void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+                for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
+                {   // store item
+                    QCheckBox *ch = new QCheckBox(((TCity*)Start[i])->name + " : " + (((TStore*)s[i])->name));
+                    lay->addWidget(ch);
+                }
+            }
+        }
+        ui->scrollAreaWidgetContents->setLayout(lay);
+    }
 }
 
 
@@ -813,6 +899,8 @@ void MainWindow::on_action_4_triggered()
    heads.append("магазин");
    heads.append("капітал");
 
+   ui->tableWidget->setHorizontalHeaderLabels(heads);
+
    ui->subheader->setVisible(true);
 
    ui->subheader->setText("Запаси магазинів: ");
@@ -908,4 +996,42 @@ void MainWindow::on_action_10_triggered()
 void MainWindow::on_action_11_triggered()
 {
     sortThings<toLower>();
+}
+
+void MainWindow::on_action_12_triggered()
+{
+    makeInvisible();
+
+    tab = 51;
+
+    ui->subheader->setVisible(true);
+    ui->subheader->setText("Укажіть ціновий діапазон: ");
+
+    ui->lineEdit->setVisible(true);
+    ui->lineEdit->setPlaceholderText("ціна до");
+    ui->lineEdit_2->setVisible(true);
+    ui->lineEdit_2->setPlaceholderText("ціна від");
+
+    ui->pushButton->setVisible(true);
+    ui->pushButton->setText("Пошук");
+}
+
+void MainWindow::on_action_13_triggered()
+{
+    makeInvisible();
+
+    tab = 52;
+
+    ui->comboBox->setVisible(true);
+    ui->subheader->setVisible(true);
+
+    ui->scrollArea->setVisible(true);
+
+    ui->subheader->setText("Оберіть необхідні міста\n(магазини)");
+
+    QStringList items;
+    items.append("міста");
+    items.append("магазини");
+
+    ui->comboBox->insertItems(0,items);
 }

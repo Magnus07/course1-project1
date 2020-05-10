@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QTreeWidgetItem>
 #include <QTableWidgetItem>
+#include <QCheckBox>
+#include <Qt>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -48,10 +50,15 @@ private slots:
 
     void on_action_11_triggered();
 
+    void on_action_12_triggered();
+
+    void on_action_13_triggered();
+
 private:
     Ui::MainWindow *ui;
     void makeInvisible();
     void refreshTreeView();
+    void cleanUp();
 
     template <typename T>
     void sortThings();
