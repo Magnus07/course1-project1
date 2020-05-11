@@ -298,47 +298,47 @@ void addToSort(void** &start,  void* pnew, int posAdd)
 //    }
 //}
 
-////mode 1 - product
-////mode 2 - store
-////mode 3 - city
-//void delEl(void** &start,  int posFnd, int mode)
-//{
-//    if (mode == 3)
-//    {
-//        void ** s = (((TCity*)start[posFnd])->sublev);
-//        for (int j = 0; j < ((int*)(s))[POS_CNT];j++)
-//        {
-//            void * * p = (((TStore*)s[j])->sublev);
-//            for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
-//            {
-//                delete ((TProduct*)p[k]);
-//            }
-//            delete (TStore*)s[j];
-//        }
-//    }
-//    else if (mode == 2)
-//    {
-//            void * * p = (((TStore*)start[posFnd])->sublev);
-//            for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
-//            {
-//                delete ((TProduct*)p[k]);
-//            }
-//    }
+//mode 1 - product
+//mode 2 - store
+//mode 3 - city
+void delEl(void** &start,  int posFnd, int mode)
+{
+    if (mode == 3)
+    {
+        void ** s = (((TCity*)start[posFnd])->sublev);
+        for (int j = 0; j < ((int*)(s))[POS_CNT];j++)
+        {
+            void * * p = (((TStore*)s[j])->sublev);
+            for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
+            {
+                delete ((TProduct*)p[k]);
+            }
+            delete (TStore*)s[j];
+        }
+    }
+    else if (mode == 2)
+    {
+            void * * p = (((TStore*)start[posFnd])->sublev);
+            for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
+            {
+                delete ((TProduct*)p[k]);
+            }
+    }
 
-//    if (1 == ((int*)start)[POS_CNT])
-//    {
-//        delete *start;
-//        //delete []((void**)start);//(((TCity*)start[0])->sublev);
-//        start = InitArray();
-//        return;
-//    }
+    if (1 == ((int*)start)[POS_CNT])
+    {
+        delete *start;
+        //delete []((void**)start);//(((TCity*)start[0])->sublev);
+        start = InitArray();
+        return;
+    }
 
-//    for (int i = posFnd; i < ((int*)start)[POS_CNT];i++)
-//    {
-//        ((void**)start)[i] = ((void**)start)[i+1];
-//    }
-//    ((int*)start)[POS_CNT]--;
-//}
+    for (int i = posFnd; i < ((int*)start)[POS_CNT];i++)
+    {
+        ((void**)start)[i] = ((void**)start)[i+1];
+    }
+    ((int*)start)[POS_CNT]--;
+}
 
 
 //void showCityRating(void** start)

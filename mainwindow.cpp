@@ -663,48 +663,6 @@ void MainWindow::on_comboBox_2_currentTextChanged(const QString &arg1)
 }
 
 
-//mode 1 - product
-//mode 2 - store
-//mode 3 - city
-void delEl(void** &start,  int posFnd, int mode)
-{   // if we'd like to delete city
-    if (mode == 3)
-    {   // go to stores
-        void ** s = (((TCity*)start[posFnd])->sublev);
-        for (int j = 0; j < ((int*)(s))[POS_CNT];j++)
-        {   // go to products
-            void * * p = (((TStore*)s[j])->sublev);
-            for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
-            {   // delete each product
-                delete ((TProduct*)p[k]);
-            } // delete each store
-            delete (TStore*)s[j];
-        }
-    } // if we'd like to delete a store
-    else if (mode == 2)
-    {   // go to products
-        void * * p = (((TStore*)start[posFnd])->sublev);
-        for (int k = 0; k < ((int*)(p))[POS_CNT];k++)
-        {   // delete product
-            delete ((TProduct*)p[k]);
-        }
-    }
-    // if there's only one element
-    if (1 == ((int*)start)[POS_CNT])
-    {   // delete it & init again
-        delete *start;
-        start = InitArray();
-        return;
-    }
-    // moving items
-    for (int i = posFnd; i < ((int*)start)[POS_CNT];i++)
-    {
-        ((void**)start)[i] = ((void**)start)[i+1];
-    } // decrease size
-    ((int*)start)[POS_CNT]--;
-}
-
-
  // treewidget event
 void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {   // if it's empty element
