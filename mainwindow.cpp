@@ -14,6 +14,8 @@
 // 52 - search among cities or stores screen
 ushort tab = 0;
 void ** Start = InitArray();
+QVBoxLayout * lay;
+QList<QCheckBox *> checkBoxes;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -23,11 +25,26 @@ MainWindow::MainWindow(QWidget *parent)
 
     makeInvisible();
     ui->header->setVisible(true);
+    lay = new QVBoxLayout(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::setTreeWidgetHeaders()
+{
+    // configure headers
+    QStringList headers;
+    headers.append("країна");
+    headers.append("місто");
+    headers.append("магазин");
+    headers.append("товар");
+
+    // set headers
+    ui->treeWidget->setHeaderLabels(headers);
 }
 
 
@@ -40,15 +57,7 @@ void MainWindow::refreshTreeView()
     QTreeWidgetItem *topItem = new QTreeWidgetItem();
     topItem->setText(0,"Ukraine");
 
-    // configure headers
-    QStringList headers;
-    headers.append("країна");
-    headers.append("місто");
-    headers.append("магазин");
-    headers.append("товар");
-
-    // set headers
-    ui->treeWidget->setHeaderLabels(headers);
+    setTreeWidgetHeaders();
 
     for (int i = 0; i <cnt; i++) // loop
     {   // output third level
@@ -282,9 +291,6 @@ void MainWindow::on_pushButton_clicked()
         if (ui->comboBox->currentText() == "Місто")
         {   // find items
             found = ui->treeWidget->findItems(searchquery, Qt::MatchContains | Qt::MatchRecursive, 1);
-//            for (int i = 0; i  < found.length(); i++)
-//                found[i]->parent()->removeChild(found[i]);
-//            topItem->addChildren(found);
             // removing childs
             for (int i = 0; i < found.length();i++)
             {
@@ -301,59 +307,11 @@ void MainWindow::on_pushButton_clicked()
                 found[i]->parent()->parent()->removeChild(found[i]->parent());
                 topItem->addChild(found[i]->parent());
             }
-//            for (int i = 0; i  < found.length(); i++)
-//            {
-//                found[i]->parent()->parent()->removeChild(found[i]->parent());
-//                for (int j = 0; j < found[i]->parent()->childCount();j++)
-//                {
-//                    if (found[i]->parent()->child(j) != found[i])
-//                    {
-//                        found[i]->parent()->takeChild(j);
-//                        j--;
-//                    }
-//                }
-//            }
-//            for (int i = 0; i < found.length();i++)
-//                topItem->addChild(found[i]->parent());
         } // if we'd like to find a product
         if (ui->comboBox->currentText() == "Товар")
         {   // generate searchquery and search
             searchquery += "\n" + ui->lineEdit->text() + "\n" + ui->lineEdit_5->text() + "\n" + ui->lineEdit_6->text();
             found =  ui->treeWidget->findItems(searchquery, Qt::MatchContains | Qt::MatchRecursive ,3);
-
-//            for (int i = 0; i  < found.length(); i++)
-//            {
-//                found[i]->parent()->parent()->parent()->removeChild(found[i]->parent()->parent());
-//                for (int j = 0; j < found[i]->parent()->childCount();j++)
-//                {
-//                    if (found.indexOf(found[i]->parent()->child(j)) == -1)
-//                    {
-//                        found[i]->parent()->takeChild(j);
-//                        j--;
-//                    }
-//                }
-//                for (int j = 0; j < found[i]->parent()->parent()->childCount();j++)
-//                {
-//                    if (found[i]->parent()->indexOfChild(found[i]->parent()->parent()->child(j)) == -1)
-//                    {
-//                        found[i]->parent()->parent()->takeChild(j);
-//                        j--;
-//                    }
-//                }
-//            }
-
-            // V 2
-//            QTreeWidgetItem * itm = new QTreeWidgetItem();
-//            for (int i = 0; i < found.length();i++)
-//            {
-//                QTreeWidgetItem * city = found[i]->parent()->parent(), *store = found[i]->parent();
-//                itm->addChild(city);
-//                itm->child(itm->childCount())->addChild(store);
-//                itm->child(itm->childCount())->child(itm->child(itm->childCount())->childCount())->addChild(found[i]);
-//                topItem->addChild(itm);
-//            }
-            //v 3
-
             // removing children
             for (int i = 0; i < found.length();i++)
             {
@@ -413,6 +371,84 @@ void MainWindow::on_pushButton_clicked()
             }
         }
         ui->treeWidget->addTopLevelItem(top);
+    }
+    if (tab == 52)
+    {
+        QList<QString> data;
+        for (int i = 0;i < checkBoxes.size();i++)
+        {
+            if (checkBoxes[i]->isChecked())
+                data.push_back(checkBoxes[i]->text());
+        }
+
+        if (ui->comboBox->currentText() == "магазини")
+        {
+            for (int i = 0; i < data.size();i++)
+                data[i] = data[i].split(":")[1];
+        }
+
+        int cnt=((int*)Start)[POS_CNT];
+        ui->treeWidget->clear();
+
+        // create top item pointer
+        QTreeWidgetItem *topItem = new QTreeWidgetItem();
+        topItem->setText(0,"Ukraine");
+
+        setTreeWidgetHeaders();
+
+        for (int i = 0; i <cnt; i++) // loop
+        {   // output third level
+
+            if (ui->comboBox->currentText() == "міста")
+            {
+                if (data.indexOf(((TCity*)Start[i])->name) == -1)
+                    continue;
+                else
+                    data.removeAt(data.indexOf(((TCity*)Start[i])->name));
+            }
+
+            QTreeWidgetItem * itm = new QTreeWidgetItem();
+            // setting text to item
+            itm->setText(1, ((TCity*)Start[i])->name + "\n" + ((TCity*)Start[i])->region + "\n" + QString::number(((TCity*)Start[i])->postcode));
+
+            void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+            for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
+            {   // store item
+
+                if (ui->comboBox->currentText() == "магазини")
+                {
+                    if (data.indexOf(((TStore*)s[j])->name) == -1)
+                        continue;
+                    else
+                        data.removeAt(data.indexOf(((TStore*)s[j])->name));
+                }
+                QTreeWidgetItem * store = new QTreeWidgetItem();
+                // set text
+                store->setText(2, ((TStore*)s[j])->name + "\n" + ((TStore*)s[j])->adress + "\n" + (((TStore*)s[j])->phnumber));
+                // make it expanded
+                store->setExpanded(true);
+                itm->addChild(store); // add child
+
+                void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
+                for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
+                {   // create product item
+                    if (((TProduct*)p[k])->name == ui->lineEdit_2->text() && ((TProduct*)p[k])->id == ui->lineEdit_3->text().toUShort() && (((TProduct*)p[k])->category) == ui->lineEdit->text() && ((TProduct*)p[k])->description == ui->lineEdit_4->text() && ((TProduct*)p[k])->count == ui->lineEdit_5->text().toUShort() && ((TProduct*)p[k])->price == ui->lineEdit_6->text().toFloat())
+                    {
+                        QTreeWidgetItem * product = new QTreeWidgetItem();
+                        // set text to it
+                        product->setText(3, ((TProduct*)p[k])->name + "\n" + QString::number(((TProduct*)p[k])->id) + "\n" + (((TProduct*)p[k])->category) + "\n" + ((TProduct*)p[k])->description + "\n" + QString::number(((TProduct*)p[k])->count) + "\n" + QString::number(((TProduct*)p[k])->price) + "$");
+                        // make it expanded
+                        product->setExpanded(true);
+                        store->addChild(product); // add child
+                    }
+                }
+                itm->addChild(store);
+            }
+            // add child to the top item
+            topItem->addChild(itm);
+            topItem->setExpanded(true);
+            ui->treeWidget->addTopLevelItem(topItem);
+        }
     }
 }
 
@@ -730,23 +766,25 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
             ui->lineEdit_5->setVisible(true);
             ui->lineEdit_5->setPlaceholderText("кількість товару на складі");
             ui->lineEdit_6->setVisible(true);
-            ui->lineEdit_6->setPlaceholderText("ціна з 1 шт у долярах");
+            ui->lineEdit_6->setPlaceholderText("ціна за 1 шт у долярах");
         }
     }
     if (tab == 52)
     {
         int cnt=((int*)Start)[POS_CNT];
-        QVBoxLayout * lay = new QVBoxLayout(this);
-        QLayoutItem * child;
-        while ((child = lay->takeAt(0)) != 0) {
-            delete child;
+
+        for (;checkBoxes.size() != 0;)
+        {
+            delete checkBoxes[0];
+            checkBoxes.removeAt(0);
         }
+
         if (ui->comboBox->currentText() == "міста")
         {
             for (int i = 0; i <cnt; i++) // loop
             {
                 QCheckBox *ch = new QCheckBox(((TCity*)Start[i])->name);
-                lay->addWidget(ch);
+                checkBoxes.append(ch);
             }
         }
         else if (ui->comboBox->currentText() == "магазини")
@@ -756,11 +794,13 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
                 void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
                 for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
                 {   // store item
-                    QCheckBox *ch = new QCheckBox(((TCity*)Start[i])->name + " : " + (((TStore*)s[i])->name));
-                    lay->addWidget(ch);
+                    QCheckBox *ch = new QCheckBox(((TCity*)Start[i])->name + ":" + ((TStore*)s[j])->name);
+                    checkBoxes.append(ch);
                 }
             }
         }
+        for (int i = 0; i < checkBoxes.size();i++)
+            lay->addWidget(checkBoxes[i]);
         ui->scrollAreaWidgetContents->setLayout(lay);
     }
 }
@@ -863,15 +903,7 @@ void MainWindow::sortThings()
     QTreeWidgetItem *topItem = new QTreeWidgetItem();
     topItem->setText(0,"Ukraine");
 
-    // configure headers
-    QStringList headers;
-    headers.append("країна");
-    headers.append("місто");
-    headers.append("магазин");
-    headers.append("товар");
-
-    // set headers
-    ui->treeWidget->setHeaderLabels(headers);
+    setTreeWidgetHeaders();
 
 
     for (;sorted.size() != 0;)
@@ -975,14 +1007,7 @@ void MainWindow::on_action_4_triggered()
    ui->treeWidget->clear();
 
 
-   // configure headers
-   QStringList headers;
-   headers.append("країна");
-   headers.append("місто");
-   headers.append("магазин");
-   headers.append("товар");
-
-   ui->treeWidget->setHeaderLabels(headers);
+   setTreeWidgetHeaders();
 
    ui->treeWidget->addTopLevelItem(topItem);
 }
@@ -1019,19 +1044,38 @@ void MainWindow::on_action_12_triggered()
 void MainWindow::on_action_13_triggered()
 {
     makeInvisible();
+    cleanUp();
 
     tab = 52;
 
     ui->comboBox->setVisible(true);
     ui->subheader->setVisible(true);
 
+    ui->treeWidget->setVisible(true);
+
     ui->scrollArea->setVisible(true);
+
+    ui->lineEdit_2->setVisible(true);
+    ui->lineEdit_2->setPlaceholderText("назва товару");
+    ui->lineEdit_3->setVisible(true);
+    ui->lineEdit_3->setPlaceholderText("id");
+    ui->lineEdit_4->setVisible(true);
+    ui->lineEdit_4->setPlaceholderText("категорія");
+    ui->lineEdit->setVisible(true);
+    ui->lineEdit->setPlaceholderText("короткий опис");
+    ui->lineEdit_5->setVisible(true);
+    ui->lineEdit_5->setPlaceholderText("кількість товару на складі");
+    ui->lineEdit_6->setVisible(true);
+    ui->lineEdit_6->setPlaceholderText("ціна за 1 шт у долярах");
 
     ui->subheader->setText("Оберіть необхідні міста\n(магазини)");
 
     QStringList items;
     items.append("міста");
     items.append("магазини");
+
+    ui->pushButton->setVisible(true);
+    ui->pushButton->setText("Пошук");
 
     ui->comboBox->insertItems(0,items);
 }
