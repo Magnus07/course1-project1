@@ -62,5 +62,11 @@ private:
 
     template <typename T>
     void sortThings();
+
+    void setTreeWidgetHeaders();
+    void showCityEdits();
+    void showStoreEdits();
+    void showProductEdits();
+    void fillCityCombobox();
 };
 #endif // MAINWINDOW_H

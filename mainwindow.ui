@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>932</width>
-    <height>783</height>
+    <height>789</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -130,6 +130,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="maxLength">
+         <number>15</number>
+        </property>
         <property name="placeholderText">
          <string>назва</string>
         </property>
@@ -141,6 +144,9 @@
          <font>
           <pointsize>14</pointsize>
          </font>
+        </property>
+        <property name="maxLength">
+         <number>15</number>
         </property>
         <property name="placeholderText">
          <string>регіон</string>
@@ -154,6 +160,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="maxLength">
+         <number>15</number>
+        </property>
         <property name="placeholderText">
          <string>поштовий індекс</string>
         </property>
@@ -166,6 +175,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="maxLength">
+         <number>50</number>
+        </property>
        </widget>
       </item>
       <item>
@@ -175,6 +187,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="maxLength">
+         <number>10</number>
+        </property>
        </widget>
       </item>
       <item>
@@ -183,6 +198,9 @@
          <font>
           <pointsize>14</pointsize>
          </font>
+        </property>
+        <property name="maxLength">
+         <number>10</number>
         </property>
        </widget>
       </item>

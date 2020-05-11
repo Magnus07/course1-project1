@@ -48,15 +48,31 @@ void MainWindow::setTreeWidgetHeaders()
 }
 
 
+void sameNameError()
+{   // message text
+    QMessageBox *message = new QMessageBox(QMessageBox::Critical,"Warning",  "Неможливо додавати елементи з однаковими іменами! Змініть ім'я або видаліть вже існуючий об'єкт.");
+    message->setStandardButtons(QMessageBox::Ok);
+    message->exec();
+}
+
+
+void emptyFieldError()
+{   // message text
+    QMessageBox *message = new QMessageBox(QMessageBox::Warning, "Warning",  "Укажіть усю інформацію. Жодне поле не має бути порожнім!");
+    message->setStandardButtons(QMessageBox::Ok);
+    message->exec();
+}
+
+
 void MainWindow::refreshTreeView()
-{
+{   // array size
     int cnt=((int*)Start)[POS_CNT];
     ui->treeWidget->clear();
 
     // create top item pointer
     QTreeWidgetItem *topItem = new QTreeWidgetItem();
     topItem->setText(0,"Ukraine");
-
+    // set headers to tree widget
     setTreeWidgetHeaders();
 
     for (int i = 0; i <cnt; i++) // loop
@@ -114,6 +130,8 @@ void MainWindow::makeInvisible()
     ui->scrollArea->setVisible(false);
 }
 
+
+// clearing the widget's values
 void MainWindow::cleanUp()
 {
     ui->comboBox->clear();
@@ -150,6 +168,16 @@ void MainWindow::on_pushButton_clicked()
         message->exec();
         return;
     }
+    if ((tab == 11 || tab == 12 || tab == 13 || tab == 20 || tab == 31 || tab == 32 || tab == 33 || tab == 40 || tab == 52) && ( ui->lineEdit_2->text() == "" || ui->lineEdit_3->text() == "" || ui->lineEdit_4->text() == ""))
+    {   // warning message
+        emptyFieldError();
+        return;
+    }
+    if (((tab == 33 || tab == 13 || tab == 52) || (tab == 40 && ui->comboBox->currentText() == "Товар")) && (ui->lineEdit->text() == "" || ui->lineEdit_5->text() == "" || ui->lineEdit_6->text() == ""))
+    {   // warning message
+        emptyFieldError();
+        return;
+    }
     // common variables
     int pos; bool fnd;
     // if we want to add a new city
@@ -162,6 +190,11 @@ void MainWindow::on_pushButton_clicked()
         ((TCity*)city)->sublev = InitArray();
         // add item to sort list
         FindElList(Start,((TCity*)city)->name,pos,fnd,cmpCity);
+        if (fnd)
+        {
+            sameNameError();
+            return;
+        }
         addToSort(Start,city, pos);
     }
     // if we want to add new store
@@ -177,11 +210,17 @@ void MainWindow::on_pushButton_clicked()
         // finding the place and adding
         int ps;bool fnd;
         FindElList(((TCity*)Start[pos])->sublev,((TStore*)store)->name,ps,fnd,cmpStore);
+        if (fnd)
+        {
+            sameNameError();
+            return;
+        }
         addToSort(((TCity*)Start[pos])->sublev,store, ps);
     }
     // if we'd like to add new product
     if (tab == 13)
-    {   //find city
+    {
+        //find city
         FindElList(Start, ui->comboBox->currentText(),pos,fnd,cmpCity);
         // find store
         int poss;bool found;
@@ -198,6 +237,11 @@ void MainWindow::on_pushButton_clicked()
         // add to sorted
         int posProduct; bool fndProduct;
         FindElList(((TStore*)(s[poss]))->sublev, ((TProduct *)product)->name, posProduct, fndProduct, cmpProduct);
+        if (fndProduct)
+        {
+            sameNameError();
+            return;
+        }
         addToSort(((TStore*)s[poss])->sublev, product, posProduct);
     }
     // if we'd like to delete some stuff
@@ -371,22 +415,18 @@ void MainWindow::on_pushButton_clicked()
             }
         }
         ui->treeWidget->addTopLevelItem(top);
-    }
+    }// search among cities/stores
     if (tab == 52)
-    {
+    {   // names' container
         QList<QString> data;
         for (int i = 0;i < checkBoxes.size();i++)
-        {
-            if (checkBoxes[i]->isChecked())
+        {   // add some data
+            if (ui->comboBox->currentText() == "магазини" && checkBoxes[i]->isChecked())
+                data[i] = data[i].split(":")[1];
+            else if (checkBoxes[i]->isChecked())
                 data.push_back(checkBoxes[i]->text());
         }
-
-        if (ui->comboBox->currentText() == "магазини")
-        {
-            for (int i = 0; i < data.size();i++)
-                data[i] = data[i].split(":")[1];
-        }
-
+        // array size
         int cnt=((int*)Start)[POS_CNT];
         ui->treeWidget->clear();
 
@@ -442,77 +482,50 @@ void MainWindow::on_pushButton_clicked()
                         store->addChild(product); // add child
                     }
                 }
-                itm->addChild(store);
+                if (store->childCount()!=0)
+                {
+                    itm->addChild(store);
+                }
+            }// add child to the top item
+            if (itm->childCount()!=0)
+            {
+                topItem->addChild(itm);
             }
-            // add child to the top item
-            topItem->addChild(itm);
+
             topItem->setExpanded(true);
             ui->treeWidget->addTopLevelItem(topItem);
         }
     }
 }
 
-// if we'd like to add a new city
-void MainWindow::on_action_7_triggered()
+
+// city template
+void MainWindow::showCityEdits()
 {
-    makeInvisible();
-    ui->treeWidget->setVisible(true);
-    ui->subheader->setVisible(true);
-    ui->subheader->setText("Укажіть необхідні дані");
-
-    tab = 11;
-
     ui->lineEdit_2->setVisible(true);
     ui->lineEdit_2->setPlaceholderText("назва міста");
     ui->lineEdit_3->setVisible(true);
-    ui->lineEdit_3->setPlaceholderText("регіон");
+    ui->lineEdit_3->setPlaceholderText("область");
     ui->lineEdit_4->setVisible(true);
     ui->lineEdit_4->setPlaceholderText("поштовий індекс");
-
-    ui->pushButton->setVisible(true);
-    ui->pushButton->setText("Додати");
 }
 
-// if we'd like to add new store
-void MainWindow::on_action_8_triggered()
+
+// store template
+void MainWindow::showStoreEdits()
 {
-    makeInvisible();
-    ui->treeWidget->setVisible(true);
-    ui->subheader->setVisible(true);
-    ui->subheader->setText("Укажіть необхідні дані");
-
-    tab = 12;
-
-    ui->comboBox->setVisible(true);
     ui->lineEdit_2->setVisible(true);
     ui->lineEdit_2->setPlaceholderText("назва магазину");
     ui->lineEdit_3->setVisible(true);
     ui->lineEdit_3->setPlaceholderText("адреса");
     ui->lineEdit_4->setVisible(true);
     ui->lineEdit_4->setPlaceholderText("мобільний телефон");
-
-    // fill the combobox item
-    for (int i = 0; i < ((int*)Start)[POS_CNT]; i++)
-    {
-        ui->comboBox->insertItem(i,QString(((TCity*)Start[i])->name));
-    }
-
-    ui->pushButton->setVisible(true);
-    ui->pushButton->setText("Додати");
 }
 
-// if we'd like to add new product
-void MainWindow::on_action_9_triggered()
+
+// product template
+void MainWindow::showProductEdits()
 {
-    makeInvisible();
-    ui->treeWidget->setVisible(true);
-    ui->subheader->setVisible(true);
-    ui->subheader->setText("Укажіть необхідні дані");
-
-    tab = 13;
-
-    ui->comboBox->setVisible(true);
-    ui->comboBox_2->setVisible(true);
     ui->lineEdit_2->setVisible(true);
     ui->lineEdit_2->setPlaceholderText("назва товару");
     ui->lineEdit_3->setVisible(true);
@@ -524,16 +537,79 @@ void MainWindow::on_action_9_triggered()
     ui->lineEdit_5->setVisible(true);
     ui->lineEdit_5->setPlaceholderText("кількість товару на складі");
     ui->lineEdit_6->setVisible(true);
-    ui->lineEdit_6->setPlaceholderText("ціна з 1 шт у долярах");
+    ui->lineEdit_6->setPlaceholderText("ціна за 1 шт у долярах");
+}
+
+// if we'd like to add a new city
+void MainWindow::on_action_7_triggered()
+{
+    makeInvisible();
+    cleanUp();
+    ui->treeWidget->setVisible(true);
+    ui->subheader->setVisible(true);
+    ui->subheader->setText("Укажіть необхідні дані");
+
+    tab = 11;
+
+    showCityEdits();
+
+    ui->pushButton->setVisible(true);
+    ui->pushButton->setText("Додати");
+}
+
+// if we'd like to add new store
+void MainWindow::on_action_8_triggered()
+{
+    makeInvisible();
+    cleanUp();
+    ui->comboBox->setVisible(true);
+    ui->treeWidget->setVisible(true);
+    ui->subheader->setVisible(true);
+    ui->subheader->setText("Укажіть необхідні дані");
+
+    tab = 12;
+
+    showStoreEdits();
 
     // fill the combobox item
+    fillCityCombobox();
+
+    ui->pushButton->setVisible(true);
+    ui->pushButton->setText("Додати");
+}
+
+// if we'd like to add new product
+void MainWindow::on_action_9_triggered()
+{
+    makeInvisible();
+    cleanUp();
+    ui->treeWidget->setVisible(true);
+    ui->subheader->setVisible(true);
+    ui->subheader->setText("Укажіть необхідні дані");
+
+    tab = 13;
+
+    ui->comboBox->setVisible(true);
+    ui->comboBox_2->setVisible(true);
+
+    showProductEdits();
+
+    // fill the combobox item
+    cleanUp();
+    fillCityCombobox();
+
+    ui->pushButton->setVisible(true);
+    ui->pushButton->setText("Додати");
+}
+
+
+void MainWindow::fillCityCombobox()
+{
+    // filling the combobox
     for (int i = 0; i < ((int*)Start)[POS_CNT]; i++)
     {
         ui->comboBox->insertItem(i,QString(((TCity*)Start[i])->name));
     }
-
-    ui->pushButton->setVisible(true);
-    ui->pushButton->setText("Додати");
 }
 
 
@@ -551,10 +627,8 @@ void MainWindow::on_action_5_triggered()
     ui->treeWidget->setVisible(true);
     ui->comboBox->clear();
     // filling the combobox
-    for (int i = 0; i < ((int*)Start)[POS_CNT]; i++)
-    {
-        ui->comboBox->insertItem(i,QString(((TCity*)Start[i])->name));
-    }
+    cleanUp();
+    fillCityCombobox();
 
     ui->pushButton->setVisible(true);
     ui->pushButton->setText("Вилучити");
@@ -655,9 +729,6 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
     ui->subheader->setVisible(true);
     ui->subheader->setText("Укажіть необхідні дані");
 
-    ui->lineEdit_2->setVisible(true);
-    ui->lineEdit_3->setVisible(true);
-    ui->lineEdit_4->setVisible(true);
     // get the data
     QStringList data = item->text(column).split("\n");
     // if it's the first column
@@ -665,51 +736,35 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
     {   // change tab index
         tab = 31;
         // fill the data
-        ui->lineEdit_2->setPlaceholderText("назва міста");
+        showCityEdits();
         ui->lineEdit_2->setText(data[0]);
-        ui->lineEdit_3->setPlaceholderText("регіон");
         ui->lineEdit_3->setText(data[1]);
-        ui->lineEdit_4->setPlaceholderText("поштовий індекс");
         ui->lineEdit_4->setText(data[2]);
     } // if it's the second column
     else if (column == 2)
     {   // change tab index
         tab = 32;
         // fill the data
-        ui->lineEdit_2->setPlaceholderText("назва магазину");
+        showStoreEdits();
         ui->lineEdit_2->setText(data[0]);
-        ui->lineEdit_3->setPlaceholderText("адреса");
         ui->lineEdit_3->setText(data[1]);
-        ui->lineEdit_4->setPlaceholderText("мобільний телефон");
         ui->lineEdit_4->setText(data[2]);
     } // if it's the third column
     else if (column == 3)
     {   // change tab index
         tab = 33;
 
-        ui->lineEdit->setVisible(true);
-        ui->lineEdit_5->setVisible(true);
-        ui->lineEdit_6->setVisible(true);
+        showProductEdits();
         // fill the data
-        ui->lineEdit_2->setPlaceholderText("назва товару");
         ui->lineEdit_2->setText(data[0]);
-        ui->lineEdit_3->setPlaceholderText("id");
         ui->lineEdit_3->setText(data[1]);
-        ui->lineEdit_4->setPlaceholderText("категорія");
         ui->lineEdit_4->setText(data[2]);
-        ui->lineEdit->setPlaceholderText("короткий опис");
         ui->lineEdit->setText(data[3]);
-        ui->lineEdit_5->setPlaceholderText("кількість товару на складі");
         ui->lineEdit_5->setText(data[4]);
-        ui->lineEdit_6->setPlaceholderText("ціна за 1 шт у долярах");
         ui->lineEdit_6->setText(data[5]);
     }
     // insert data to combobox
-    for (int i = 0; i < ((int*)Start)[POS_CNT]; i++)
-    {
-        ui->comboBox->insertItem(i,QString(((TCity*)Start[i])->name));
-    }
-
+    fillCityCombobox();
 
     ui->pushButton->setVisible(true);
     ui->pushButton->setText("Зберегти");
@@ -737,36 +792,15 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
     {   // if we're searching for a city
         if (ui->comboBox->currentText() == "Місто")
         {
-            ui->lineEdit_2->setVisible(true);
-            ui->lineEdit_2->setPlaceholderText("назва міста");
-            ui->lineEdit_3->setVisible(true);
-            ui->lineEdit_3->setPlaceholderText("регіон");
-            ui->lineEdit_4->setVisible(true);
-            ui->lineEdit_4->setPlaceholderText("поштовий індекс");
+            showCityEdits();
         } // if we're searching for a store
         else if (ui->comboBox->currentText() == "Магазин")
         {
-            ui->lineEdit_2->setVisible(true);
-            ui->lineEdit_2->setPlaceholderText("назва магазину");
-            ui->lineEdit_3->setVisible(true);
-            ui->lineEdit_3->setPlaceholderText("адреса");
-            ui->lineEdit_4->setVisible(true);
-            ui->lineEdit_4->setPlaceholderText("мобільний телефон");
+            showStoreEdits();
         } // if we'are searching for a product
         else if (ui->comboBox->currentText() == "Товар")
         {
-            ui->lineEdit_2->setVisible(true);
-            ui->lineEdit_2->setPlaceholderText("назва товару");
-            ui->lineEdit_3->setVisible(true);
-            ui->lineEdit_3->setPlaceholderText("id");
-            ui->lineEdit_4->setVisible(true);
-            ui->lineEdit_4->setPlaceholderText("категорія");
-            ui->lineEdit->setVisible(true);
-            ui->lineEdit->setPlaceholderText("короткий опис");
-            ui->lineEdit_5->setVisible(true);
-            ui->lineEdit_5->setPlaceholderText("кількість товару на складі");
-            ui->lineEdit_6->setVisible(true);
-            ui->lineEdit_6->setPlaceholderText("ціна за 1 шт у долярах");
+            showProductEdits();
         }
     }
     if (tab == 52)
@@ -828,6 +862,7 @@ void MainWindow::on_action_3_triggered()
 }
 
 
+// container structure
 template <typename T>
 struct Rating
 {
@@ -835,6 +870,8 @@ struct Rating
     double  cost;
 };
 
+
+// sort overloading operators
 struct toLower {
     bool operator()(Rating<QTreeWidgetItem*> const& p1, Rating<QTreeWidgetItem*> const& p2)
     {
@@ -905,7 +942,7 @@ void MainWindow::sortThings()
 
     setTreeWidgetHeaders();
 
-
+    // add childs to top item
     for (;sorted.size() != 0;)
     {
         topItem->addChild(sorted.top().item);
@@ -917,6 +954,7 @@ void MainWindow::sortThings()
 }
 
 
+// individual task solution
 void MainWindow::on_action_4_triggered()
 {
    makeInvisible();
@@ -986,27 +1024,24 @@ void MainWindow::on_action_4_triggered()
     }
 
    ui->tableWidget->setRowCount(rating.size());
-
+    // go through the rating container
    for (int i = 0;rating.size() != 0;i++)
-   {
+   {   // get top element
        Rating<QTreeWidgetItem*> rate = rating.top();
        topItem->addChild(rate.item->parent());
        rating.pop();
-
-
+        // create columns
        QTableWidgetItem * column1 = new QTableWidgetItem();
        column1->setText(rate.item->text(2).split("\n")[0]);
 
        QTableWidgetItem * column2 = new QTableWidgetItem();
        column2->setText(QString::number(rate.cost) + "$");
-
+        // set items
        ui->tableWidget->setItem(i,0, column1);
        ui->tableWidget->setItem(i,1,column2);
    }
-
+    // clear widget and add headers
    ui->treeWidget->clear();
-
-
    setTreeWidgetHeaders();
 
    ui->treeWidget->addTopLevelItem(topItem);
@@ -1014,21 +1049,23 @@ void MainWindow::on_action_4_triggered()
 
 
 void MainWindow::on_action_10_triggered()
-{
+{   // call function
     sortThings<toHigher>();
 }
 
 void MainWindow::on_action_11_triggered()
-{
+{   // call function
     sortThings<toLower>();
 }
 
+
+// find some stuff in between
 void MainWindow::on_action_12_triggered()
 {
     makeInvisible();
 
     tab = 51;
-
+    // ui preparations
     ui->subheader->setVisible(true);
     ui->subheader->setText("Укажіть ціновий діапазон: ");
 
@@ -1041,13 +1078,15 @@ void MainWindow::on_action_12_triggered()
     ui->pushButton->setText("Пошук");
 }
 
+
+// search among the cities/stores
 void MainWindow::on_action_13_triggered()
 {
     makeInvisible();
     cleanUp();
 
     tab = 52;
-
+    // ui preparations
     ui->comboBox->setVisible(true);
     ui->subheader->setVisible(true);
 
@@ -1055,21 +1094,10 @@ void MainWindow::on_action_13_triggered()
 
     ui->scrollArea->setVisible(true);
 
-    ui->lineEdit_2->setVisible(true);
-    ui->lineEdit_2->setPlaceholderText("назва товару");
-    ui->lineEdit_3->setVisible(true);
-    ui->lineEdit_3->setPlaceholderText("id");
-    ui->lineEdit_4->setVisible(true);
-    ui->lineEdit_4->setPlaceholderText("категорія");
-    ui->lineEdit->setVisible(true);
-    ui->lineEdit->setPlaceholderText("короткий опис");
-    ui->lineEdit_5->setVisible(true);
-    ui->lineEdit_5->setPlaceholderText("кількість товару на складі");
-    ui->lineEdit_6->setVisible(true);
-    ui->lineEdit_6->setPlaceholderText("ціна за 1 шт у долярах");
+    showProductEdits();
 
     ui->subheader->setText("Оберіть необхідні міста\n(магазини)");
-
+    // combobox items
     QStringList items;
     items.append("міста");
     items.append("магазини");
