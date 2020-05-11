@@ -8,6 +8,11 @@
 #include <QTableWidgetItem>
 #include <QCheckBox>
 #include <Qt>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -53,6 +58,10 @@ private slots:
     void on_action_12_triggered();
 
     void on_action_13_triggered();
+
+    void on_action_2_triggered();
+
+    void on_action_triggered();
 
 private:
     Ui::MainWindow *ui;

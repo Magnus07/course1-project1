@@ -1065,3 +1065,158 @@ void MainWindow::on_action_13_triggered()
 
     ui->comboBox->insertItems(0,items);
 }
+
+
+// function for converting to json
+QJsonDocument jsonize()
+{
+    QJsonDocument json;
+    // size array
+    int cnt=((int*)Start)[POS_CNT];
+    QJsonArray global;
+
+    for (int i = 0; i <cnt; i++) // loop
+    {   // third level
+        QJsonObject city;
+        city["name"] = ((TCity*)Start[i])->name;
+        city["region"] = ((TCity*)Start[i])->region;
+        city["postcode"] = QString::number(((TCity*)Start[i])->postcode);
+        QJsonArray stores;
+        void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+        for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
+        {   // store item
+            QJsonObject store;
+            store["name"] = ((TStore*)s[j])->name;
+            store["adress"] = ((TStore*)s[j])->adress;
+            store["phnumber"] = ((TStore*)s[j])->phnumber;
+
+            QJsonArray products;
+            void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
+            for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
+            {   // create product item
+                QJsonObject product;
+                product["name"] = ((TProduct*)p[k])->name;
+                product["id"] = ((TProduct*)p[k])->id;
+                product["category"] = ((TProduct*)p[k])->category;
+                product["description"] = ((TProduct*)p[k])->description;
+                product["count"] = ((TProduct*)p[k])->count;
+                product["price"] = ((TProduct*)p[k])->price;
+
+                products.append(product);
+            }
+            store["products"] = products;
+            stores.append(store);
+        }
+        city["stores"] = stores;
+        global.append(city);
+    }// set global item
+    json.setArray(global);
+    return json;
+}
+
+void MainWindow::on_action_2_triggered()
+{
+    // search for an empty place
+    int f = 0;
+    while (QFile::exists("data" + QString::number(f) +".json"))
+        f++;
+    // open file
+    QFile jsonFile("data" + QString::number(f) +".json");
+    jsonFile.open(QFile::WriteOnly);
+    // write to a file
+    jsonFile.write(jsonize().toJson());
+    // message
+    QMessageBox *message = new QMessageBox(QMessageBox::Information, "Успішно",  "Збережено у кореневій директорії як data" + QString::number(f) +".json");
+    message->setStandardButtons(QMessageBox::Ok);
+    message->exec();
+}
+
+
+void deleteWhole()
+{
+    // size
+    int cnt=((int*)Start)[POS_CNT];
+    for (int i = 0; i <cnt; i++) // loop
+    {   // go to the third level
+        void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+        for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
+        {   // store item
+            void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
+            for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
+            {   // delete product item
+                delete (TProduct*)p[k];
+            }
+            delete (TStore*)s[j];
+        }
+        delete (TCity*)Start[i];
+    } // init array
+    Start = InitArray();
+}
+
+void MainWindow::on_action_triggered()
+{
+    QMessageBox msgBox;
+    // message icon
+    msgBox.setIcon(QMessageBox::Information);
+    // message text
+    msgBox.setInformativeText("Якщо ви продовжите, усі дані будуть видалені. Продовжити?");
+    // message buttons
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    // if it's canceled
+    switch (msgBox.exec()) {
+        case QMessageBox::Cancel:
+             return;
+    } // open file dialog
+    QString fileName = QFileDialog::getOpenFileName(0, "Open Dialog", "", "*.json");
+    QFile jsonFile(fileName);
+    // open file
+    jsonFile.open(QFile::ReadOnly);
+    QJsonDocument source = QJsonDocument().fromJson(jsonFile.readAll());
+    // get objects
+    QJsonArray cities = source.array();
+    // if there's no cities
+    if (cities.size() == 0)
+        return;
+    // remove items
+    deleteWhole();
+    // go through all elements
+    for (int i = 0; i < cities.size();i++)
+    {
+        TCity * city = new TCity();
+        // new item
+        city->name = cities[i].toObject().value("name").toString();
+        city->region = cities[i].toObject().value("region").toString();
+        city->postcode = cities[i].toObject().value("postcode").toInt();
+        city->sublev = InitArray();
+        // stores array
+        QJsonArray stores = cities[i].toObject().value("stores").toArray();
+        addToSort(Start,city,i);
+        for (int j = 0; j < stores.size();j++)
+        {
+            void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+            TStore * store = new TStore();
+            store->name = stores[j].toObject().value("name").toString();
+            store->adress = stores[j].toObject().value("adress").toString();
+            store->phnumber = stores[j].toObject().value("phnumber").toString();
+            store->sublev = InitArray();
+            // products array
+            QJsonArray products = stores[j].toObject().value("products").toArray();
+            addToSort(((TCity*)Start[i])->sublev, store, j);
+            for (int k = 0; k < products.size();k++)
+            {
+                TProduct * product = new TProduct();
+                product->name = products[k].toObject().value("name").toString();
+                product->id = products[k].toObject().value("id").toInt();
+                product->category = products[k].toObject().value("category").toString();
+                product->description = products[k].toObject().value("description").toString();
+                product->count = products[k].toObject().value("count").toInt();
+                product->price = products[k].toObject().value("price").toInt();
+                // add to sort
+                addToSort(((TStore*)s[j])->sublev,product,k);
+            }
+        }
+    }
+    refreshTreeView();
+    makeInvisible();
+    ui->treeWidget->setVisible(true);
+}

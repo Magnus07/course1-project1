@@ -41,8 +41,8 @@
          </font>
         </property>
         <property name="text">
-         <string>Для початку роботи створіть новий
-або відкрийте існуючий файл</string>
+         <string>Для початку роботи відкрийте файл
+або додайте елементи</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -238,7 +238,6 @@
     <property name="title">
      <string>Файл</string>
     </property>
-    <addaction name="action_6"/>
     <addaction name="action"/>
     <addaction name="action_2"/>
    </widget>
@@ -274,12 +273,12 @@
   </widget>
   <action name="action">
    <property name="text">
-    <string>Відкрити</string>
+    <string>Завантажити з файлу</string>
    </property>
   </action>
   <action name="action_2">
    <property name="text">
-    <string>Зберегти</string>
+    <string>Зберегти у файл</string>
    </property>
   </action>
   <action name="action_3">
