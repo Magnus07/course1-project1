@@ -1220,3 +1220,14 @@ void MainWindow::on_action_triggered()
     makeInvisible();
     ui->treeWidget->setVisible(true);
 }
+
+void MainWindow::on_action_15_triggered()
+{
+    makeInvisible();
+
+    ui->header->setVisible(true);
+    ui->subheader->setVisible(true);
+
+    ui->header->setText("QWESDA 2020\nрозроблена Pinchuk S.S.");
+    ui->subheader->setText("open source software\nhttps://github.com/Magnus07/course1-project1\nCircled Q icon by Icons8\n\nCPNU 2020");
+}

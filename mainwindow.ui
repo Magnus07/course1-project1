@@ -266,6 +266,8 @@
     <addaction name="action_3"/>
     <addaction name="menu_2"/>
     <addaction name="action_5"/>
+    <addaction name="separator"/>
+    <addaction name="action_15"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
@@ -344,6 +346,11 @@
   <action name="action_13">
    <property name="text">
     <string>Пошук товару у певних магазинах(містах)</string>
+   </property>
+  </action>
+  <action name="action_15">
+   <property name="text">
+    <string>Про програму</string>
    </property>
   </action>
  </widget>
