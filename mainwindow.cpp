@@ -174,7 +174,7 @@ void MainWindow::on_pushButton_clicked()
         emptyFieldError();
         return;
     }
-    if (((tab == 33 || tab == 13 || tab == 52) || (tab == 40 && ui->comboBox->currentText() == "Товар")) && (ui->lineEdit->text() == "" || ui->lineEdit_5->text() == "" || ui->lineEdit_6->text() == ""))
+    if (((tab == 33 || tab == 13)) && (ui->lineEdit->text() == "" || ui->lineEdit_5->text() == "" || ui->lineEdit_6->text() == ""))
     {   // warning message
         emptyFieldError();
         return;
@@ -355,7 +355,7 @@ void MainWindow::on_pushButton_clicked()
         } // if we'd like to find a product
         if (ui->comboBox->currentText() == "Товар")
         {   // generate searchquery and search
-            searchquery += "\n" + ui->lineEdit->text() + "\n" + ui->lineEdit_5->text() + "\n" + ui->lineEdit_6->text();
+//            searchquery += "\n" + ui->lineEdit->text() + "\n" + ui->lineEdit_5->text() + "\n" + ui->lineEdit_6->text();
             found =  ui->treeWidget->findItems(searchquery, Qt::MatchContains | Qt::MatchRecursive ,3);
             // removing children
             for (int i = 0; i < found.length();i++)
@@ -473,7 +473,7 @@ void MainWindow::on_pushButton_clicked()
                 void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
                 for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
                 {   // create product item
-                    if (((TProduct*)p[k])->name == ui->lineEdit_2->text() && ((TProduct*)p[k])->id == ui->lineEdit_3->text().toUShort() && (((TProduct*)p[k])->category) == ui->lineEdit->text() && ((TProduct*)p[k])->description == ui->lineEdit_4->text() && ((TProduct*)p[k])->count == ui->lineEdit_5->text().toUShort() && ((TProduct*)p[k])->price == ui->lineEdit_6->text().toFloat())
+                    if (((TProduct*)p[k])->name == ui->lineEdit_2->text() && ((TProduct*)p[k])->id == ui->lineEdit_3->text().toUShort() && (((TProduct*)p[k])->category) == ui->lineEdit->text())
                     {
                         QTreeWidgetItem * product = new QTreeWidgetItem();
                         // set text to it
@@ -752,6 +752,7 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
         if (ui->comboBox->currentText() == "Місто")
         {
             showCityEdits();
+
         } // if we're searching for a store
         else if (ui->comboBox->currentText() == "Магазин")
         {
@@ -760,6 +761,12 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
         else if (ui->comboBox->currentText() == "Товар")
         {
             showProductEdits();
+        }
+        if (ui->comboBox->currentText() == "Місто" || ui->comboBox->currentText() == "Магазин")
+        {
+            ui->lineEdit->setVisible(false);
+            ui->lineEdit_5->setVisible(false);
+            ui->lineEdit_6->setVisible(false);
         }
     }
     if (tab == 52)
@@ -804,6 +811,7 @@ void MainWindow::on_action_3_triggered()
 {
     tab = 40;
     makeInvisible();
+    cleanUp();
 
     ui->subheader->setVisible(true);
     ui->subheader->setText("Укажіть дані для пошуку");
@@ -1081,7 +1089,7 @@ QJsonDocument jsonize()
         QJsonObject city;
         city["name"] = ((TCity*)Start[i])->name;
         city["region"] = ((TCity*)Start[i])->region;
-        city["postcode"] = QString::number(((TCity*)Start[i])->postcode);
+        city["postcode"] = (int)((TCity*)Start[i])->postcode;
         QJsonArray stores;
         void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
         for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
