@@ -12,6 +12,7 @@
 // 40 - search screen
 // 51 - search in range screen
 // 52 - search among cities or stores screen
+// 60 - about screen
 ushort tab = 0;
 void ** Start = InitArray();
 QVBoxLayout * lay;
@@ -1227,6 +1228,8 @@ void MainWindow::on_action_15_triggered()
 
     ui->header->setVisible(true);
     ui->subheader->setVisible(true);
+
+    tab = 60;
 
     ui->header->setText("QWESDA 2020\nрозроблена Pinchuk S.S.");
     ui->subheader->setText("open source software\nhttps://github.com/Magnus07/course1-project1\nCircled Q icon by Icons8\n\nCPNU 2020");
