@@ -423,7 +423,7 @@ void MainWindow::on_pushButton_clicked()
         for (int i = 0;i < checkBoxes.size();i++)
         {   // add some data
             if (ui->comboBox->currentText() == "магазини" && checkBoxes[i]->isChecked())
-                data[i] = data[i].split(":")[1];
+                data.push_back(checkBoxes[i]->text().split(":")[1]);
             else if (checkBoxes[i]->isChecked())
                 data.push_back(checkBoxes[i]->text());
         }
@@ -468,12 +468,11 @@ void MainWindow::on_pushButton_clicked()
                 store->setText(2, ((TStore*)s[j])->name + "\n" + ((TStore*)s[j])->adress + "\n" + (((TStore*)s[j])->phnumber));
                 // make it expanded
                 store->setExpanded(true);
-                itm->addChild(store); // add child
 
                 void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
                 for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
                 {   // create product item
-                    if (((TProduct*)p[k])->name == ui->lineEdit_2->text() && ((TProduct*)p[k])->id == ui->lineEdit_3->text().toUShort() && (((TProduct*)p[k])->category) == ui->lineEdit->text())
+                    if (((TProduct*)p[k])->name == ui->lineEdit_2->text() && ((TProduct*)p[k])->id == ui->lineEdit_3->text().toUShort() && (((TProduct*)p[k])->category) == ui->lineEdit_4->text())
                     {
                         QTreeWidgetItem * product = new QTreeWidgetItem();
                         // set text to it
