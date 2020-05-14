@@ -760,9 +760,7 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
         else if (ui->comboBox->currentText() == "Товар")
         {
             showProductEdits();
-        }
-        if (ui->comboBox->currentText() == "Місто" || ui->comboBox->currentText() == "Магазин")
-        {
+
             ui->lineEdit->setVisible(false);
             ui->lineEdit_5->setVisible(false);
             ui->lineEdit_6->setVisible(false);
@@ -1061,6 +1059,10 @@ void MainWindow::on_action_13_triggered()
     ui->scrollArea->setVisible(true);
 
     showProductEdits();
+
+    ui->lineEdit->setVisible(false);
+    ui->lineEdit_5->setVisible(false);
+    ui->lineEdit_6->setVisible(false);
 
     ui->subheader->setText("Оберіть необхідні міста\n(магазини)");
     // combobox items
