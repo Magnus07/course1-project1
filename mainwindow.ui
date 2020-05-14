@@ -84,8 +84,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>840</width>
-           <height>68</height>
+           <width>801</width>
+           <height>69</height>
           </rect>
          </property>
         </widget>
@@ -156,7 +156,7 @@
          </font>
         </property>
         <property name="maxLength">
-         <number>15</number>
+         <number>30</number>
         </property>
         <property name="placeholderText">
          <string>регіон</string>
@@ -236,7 +236,7 @@
      <x>0</x>
      <y>0</y>
      <width>940</width>
-     <height>28</height>
+     <height>27</height>
     </rect>
    </property>
    <property name="font">
