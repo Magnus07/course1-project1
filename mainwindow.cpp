@@ -170,7 +170,7 @@ void MainWindow::on_pushButton_clicked()
         message->exec();
         return;
     }
-    if ((tab == 11 || tab == 12 || tab == 13 || tab == 31 || tab == 32 || tab == 33 || tab == 40 || tab == 52) && ( ui->lineEdit_2->text() == "" || ui->lineEdit_3->text() == "" || ui->lineEdit_4->text() == ""))
+    if ((tab == 11 || tab == 12 || tab == 13 || tab == 31 || tab == 32 || tab == 33 || tab == 52) && ( ui->lineEdit_2->text() == "" || ui->lineEdit_3->text() == "" || ui->lineEdit_4->text() == ""))
     {   // warning message
         emptyFieldError();
         return;
@@ -324,14 +324,20 @@ void MainWindow::on_pushButton_clicked()
     refreshTreeView();
     // if we'd like to find some things
     if (tab == 40)
-    {   // make treewidget visible
+    {
+        if (ui->lineEdit_2->text() == "")
+        {
+            emptyFieldError();
+            return;
+        }
+        // make treewidget visible
         ui->treeWidget->setVisible(true);
         QList<QTreeWidgetItem*> found;
         // request memory for top item
         QTreeWidgetItem *topItem = new QTreeWidgetItem();
         topItem->setText(0,"Ukraine");
         // make searchquery
-        QString searchquery = ui->lineEdit_2->text() + "\n" + ui->lineEdit_3->text() + "\n" + ui->lineEdit_4->text();
+        QString searchquery = ui->lineEdit_2->text();
 
         // if we're searching for a city
         if (ui->comboBox->currentText() == "Місто")
@@ -356,7 +362,6 @@ void MainWindow::on_pushButton_clicked()
         } // if we'd like to find a product
         if (ui->comboBox->currentText() == "Товар")
         {   // generate searchquery and search
-//            searchquery += "\n" + ui->lineEdit->text() + "\n" + ui->lineEdit_5->text() + "\n" + ui->lineEdit_6->text();
             found =  ui->treeWidget->findItems(searchquery, Qt::MatchContains | Qt::MatchRecursive ,3);
             // removing children
             for (int i = 0; i < found.length();i++)
@@ -748,24 +753,9 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
         }
     }// if we'd like to find items
     if (tab == 40)
-    {   // if we're searching for a city
-        if (ui->comboBox->currentText() == "Місто")
-        {
-            showCityEdits();
-
-        } // if we're searching for a store
-        else if (ui->comboBox->currentText() == "Магазин")
-        {
-            showStoreEdits();
-        } // if we'are searching for a product
-        else if (ui->comboBox->currentText() == "Товар")
-        {
-            showProductEdits();
-
-            ui->lineEdit->setVisible(false);
-            ui->lineEdit_5->setVisible(false);
-            ui->lineEdit_6->setVisible(false);
-        }
+    {   // searching field
+        ui->lineEdit_2->setVisible(true);
+        ui->lineEdit_2->setPlaceholderText("Вкажіть пошуковий запит");
     }
     if (tab == 52)
     {
@@ -1243,4 +1233,11 @@ void MainWindow::on_action_15_triggered()
 
     ui->header->setText("QWESDA 2020\nрозроблена Pinchuk S.S.");
     ui->subheader->setText("open source software\nhttps://github.com/Magnus07/course1-project1\nCircled Q icon by Icons8\n\nCPNU 2020");
+}
+
+void MainWindow::on_action_14_triggered()
+{
+    refreshTreeView();
+    makeInvisible();
+    ui->treeWidget->setVisible(true);
 }
