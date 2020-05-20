@@ -441,6 +441,7 @@ void MainWindow::on_pushButton_clicked()
                         // set text to it
                         product->setText(3, ((TProduct*)p[k])->name + "\n" + QString::number(((TProduct*)p[k])->id) + "\n" + (((TProduct*)p[k])->category) + "\n" + ((TProduct*)p[k])->description + "\n" + QString::number(((TProduct*)p[k])->count) + "\n" + QString::number(((TProduct*)p[k])->price) + "$");
                         store->addChild(product);
+                        count++;
                     }
                 }
                 if (store->childCount()!=0)
@@ -453,6 +454,7 @@ void MainWindow::on_pushButton_clicked()
                 top->addChild(itm);
             }
         }
+        successFoundMessage(count);
         ui->treeWidget->addTopLevelItem(top);
     }// search among cities/stores
     if (tab == 52)
@@ -940,7 +942,10 @@ void MainWindow::sortThings()
     }
 
     ui->treeWidget->addTopLevelItem(topItem);
-
+    // show success message
+    QMessageBox *message = new QMessageBox(QMessageBox::Information, "Information",  "Дерево було відсортовано. Розкрийте елементи дерева аби побачити результат!");
+    message->setStandardButtons(QMessageBox::Ok);
+    message->exec();
 }
 
 
