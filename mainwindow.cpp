@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     makeInvisible();
     ui->header->setVisible(true);
+    ui->subheader->setVisible(true);
     lay = new QVBoxLayout(this);
 }
 
@@ -169,7 +170,7 @@ void MainWindow::on_pushButton_clicked()
         message->exec();
         return;
     }
-    if ((tab == 11 || tab == 12 || tab == 13 || tab == 20 || tab == 31 || tab == 32 || tab == 33 || tab == 40 || tab == 52) && ( ui->lineEdit_2->text() == "" || ui->lineEdit_3->text() == "" || ui->lineEdit_4->text() == ""))
+    if ((tab == 11 || tab == 12 || tab == 13 || tab == 31 || tab == 32 || tab == 33 || tab == 40 || tab == 52) && ( ui->lineEdit_2->text() == "" || ui->lineEdit_3->text() == "" || ui->lineEdit_4->text() == ""))
     {   // warning message
         emptyFieldError();
         return;

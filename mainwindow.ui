@@ -67,7 +67,7 @@
          <string notr="true">hide:true</string>
         </property>
         <property name="text">
-         <string>Вкажіть ім'я файлу</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;На випадок, якщо ви забули:&lt;/p&gt;&lt;p&gt;- Редагування елеменів за допомогою подвійного кліку&lt;/p&gt;&lt;p&gt;- Видаляти можна будь-який рівень,&lt;/p&gt;&lt;p&gt;- Аби обрати рівень, який не потрібно видаляти,&lt;/p&gt;&lt;p&gt;необхідно обрати значення &amp;quot;null&amp;quot; на цьому рівні&lt;/p&gt;&lt;p&gt;- Пошук здійснюється по усіх полях,&lt;/p&gt;&lt;p&gt;виводяться усі можливі збіги.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
