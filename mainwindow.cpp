@@ -300,27 +300,26 @@ void MainWindow::on_pushButton_clicked()
     }// if we'd like to edit store
     if (tab == 32)
     {   // search for city and store
-        QStringList item = ui->treeWidget->currentItem()->text(ui->treeWidget->currentColumn()).split("\n");
+        QStringList item = ui->treeWidget->currentItem()->parent()->text(ui->treeWidget->currentColumn() - 1).split("\n");
         FindElList(Start, item[0],pos, fnd, cmpCity);
         void ** s = (void**)(((TCity*)Start[pos])->sublev); // go to the next level
         int spos;bool sfound;
-        FindElList(((TCity*)Start[pos])->sublev, ui->lineEdit_2->text(), spos, sfound, cmpStore);
+        FindElList(((TCity*)Start[pos])->sublev, ui->treeWidget->currentItem()->text(ui->treeWidget->currentColumn()).split("\n")[0], spos, sfound, cmpStore);
         // edit this element
         ((TStore*)s[spos])->name = ui->lineEdit_2->text();
         ((TStore*)s[spos])->adress = ui->lineEdit_3->text();
         ((TStore*)s[spos])->phnumber = ui->lineEdit_4->text();
-
     }// if we'd like to edit product
     if (tab == 33)
     {   // search for city, store & product
         QStringList item = ui->treeWidget->currentItem()->text(ui->treeWidget->currentColumn()).split("\n");
 
-        FindElList(Start, ui->comboBox->currentText(),pos, fnd, cmpCity);
+        FindElList(Start, ui->treeWidget->currentItem()->parent()->parent()->text(ui->treeWidget->currentColumn() - 2).split("\n")[0],pos, fnd, cmpCity);
         int spos;bool sfound;
 
-        FindElList(((TCity*)Start[pos])->sublev, ui->comboBox_2->currentText(), spos, sfound, cmpStore);
+        FindElList(((TCity*)Start[pos])->sublev, ui->treeWidget->currentItem()->parent()->text(ui->treeWidget->currentColumn() - 1).split("\n")[0], spos, sfound, cmpStore);
         int ppos;bool pfound;
-        FindElList(((TStore*)(((TCity*)Start[pos])->sublev[spos]))->sublev, ui->lineEdit_2->text(), ppos, pfound, cmpProduct);
+        FindElList(((TStore*)(((TCity*)Start[pos])->sublev[spos]))->sublev, item[0], ppos, pfound, cmpProduct);
 
         void ** p = ((TStore*)(((TCity*)Start[pos])->sublev[spos]))->sublev;
         // edit product
