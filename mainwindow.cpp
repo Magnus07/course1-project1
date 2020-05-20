@@ -149,6 +149,15 @@ void MainWindow::cleanUp()
 }
 
 
+// show searching functions results
+void successFoundMessage(ushort count)
+{
+    QMessageBox *message = new QMessageBox(QMessageBox::Information, "Info",  "Розкрийте дерево аби побачити результати пошуку. Знайдено елементів: " + QString::number(count));
+    message->setStandardButtons(QMessageBox::Ok);
+    message->exec();
+}
+
+
 // create new file tab
 void MainWindow::on_action_6_triggered()
 {
@@ -170,7 +179,7 @@ void MainWindow::on_pushButton_clicked()
         message->exec();
         return;
     }
-    if ((tab == 11 || tab == 12 || tab == 13 || tab == 31 || tab == 32 || tab == 33 || tab == 52) && ( ui->lineEdit_2->text() == "" || ui->lineEdit_3->text() == "" || ui->lineEdit_4->text() == ""))
+    if ((tab == 11 || tab == 12 || tab == 13 || tab == 31 || tab == 32 || tab == 33) && ( ui->lineEdit_2->text() == "" || ui->lineEdit_3->text() == "" || ui->lineEdit_4->text() == ""))
     {   // warning message
         emptyFieldError();
         return;
@@ -180,8 +189,15 @@ void MainWindow::on_pushButton_clicked()
         emptyFieldError();
         return;
     }
+    if ((tab == 40 || tab == 52) && ui->lineEdit_2->text() == "")
+    {
+        emptyFieldError();
+        return;
+    }
     // common variables
     int pos; bool fnd;
+    // found items count
+    ushort count = 0;
     // if we want to add a new city
     if (tab == 11)
     {   // request memory and fill the data
@@ -325,49 +341,61 @@ void MainWindow::on_pushButton_clicked()
     // if we'd like to find some things
     if (tab == 40)
     {
-        if (ui->lineEdit_2->text() == "")
-        {
-            emptyFieldError();
-            return;
-        }
-        // make treewidget visible
-        ui->treeWidget->setVisible(true);
-        QList<QTreeWidgetItem*> found;
-        // request memory for top item
+        int cnt=((int*)Start)[POS_CNT];
+
+        // create top item pointer
         QTreeWidgetItem *topItem = new QTreeWidgetItem();
         topItem->setText(0,"Ukraine");
-        // make searchquery
-        QString searchquery = ui->lineEdit_2->text();
 
-        // if we're searching for a city
-        if (ui->comboBox->currentText() == "Місто")
-        {   // find items
-            found = ui->treeWidget->findItems(searchquery, Qt::MatchContains | Qt::MatchRecursive, 1);
-            // removing childs
-            for (int i = 0; i < found.length();i++)
+        for (int i = 0; i <cnt; i++) // loop
+        {
+            // output third level
+            QTreeWidgetItem * itm = new QTreeWidgetItem();
+            if (ui->comboBox->currentText() == "Місто" && (!ui->lineEdit_2->text().contains(((TCity*)Start[i])->name) && !ui->lineEdit_2->text().contains(((TCity*)Start[i])->region) && !ui->lineEdit_2->text().contains(QString::number(((TCity*)Start[i])->postcode))))
+                continue;
+            if (ui->comboBox->currentText() == "Місто")
             {
-                found[i]->parent()->removeChild(found[i]);
-                topItem->addChild(found[i]);
+                topItem->addChild(itm);
+                count++;
             }
-        } // if we'd like to find a store
-        if (ui->comboBox->currentText() == "Магазин")
-        {   // finding result
-            found = ui->treeWidget->findItems(searchquery, Qt::MatchContains | Qt::MatchRecursive ,2);
-            // removing childs
-            for (int i = 0; i < found.length();i++)
-            {
-                found[i]->parent()->parent()->removeChild(found[i]->parent());
-                topItem->addChild(found[i]->parent());
-            }
-        } // if we'd like to find a product
-        if (ui->comboBox->currentText() == "Товар")
-        {   // generate searchquery and search
-            found =  ui->treeWidget->findItems(searchquery, Qt::MatchContains | Qt::MatchRecursive ,3);
-            // removing children
-            for (int i = 0; i < found.length();i++)
-            {
-                found[i]->parent()->parent()->parent()->removeChild(found[i]->parent()->parent());
-                topItem->addChild(found[i]->parent()->parent());
+            // setting text to item
+            itm->setText(1, ((TCity*)Start[i])->name + "\n" + ((TCity*)Start[i])->region + "\n" + QString::number(((TCity*)Start[i])->postcode));
+
+            void ** s = (void**)(((TCity*)Start[i])->sublev); // go to the next level
+            for (int j = 0; j < ((int*)(s))[POS_CNT];j++) // loop
+            {   // store item
+                if (ui->comboBox->currentText() == "Магазин" && (!ui->lineEdit_2->text().contains(((TStore*)s[j])->name) && !ui->lineEdit_2->text().contains(((TStore*)s[j])->adress) && !ui->lineEdit_2->text().contains(((TStore*)s[j])->phnumber)))
+                    continue;
+                if (ui->comboBox->currentText() == "Магазин")
+                {
+                    topItem->addChild(itm);
+                    count++;
+                }
+
+                QTreeWidgetItem * store = new QTreeWidgetItem();
+                // set text
+                store->setText(2, ((TStore*)s[j])->name + "\n" + ((TStore*)s[j])->adress + "\n" + (((TStore*)s[j])->phnumber));
+                // make it expanded
+                store->setExpanded(true);
+                itm->addChild(store); // add child
+
+                void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
+                for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
+                {   // create product item
+                    if (ui->comboBox->currentText() == "Товар" && (!ui->lineEdit_2->text().contains(((TProduct*)p[k])->name) && !ui->lineEdit_2->text().contains(QString::number(((TProduct*)p[k])->id)) && !ui->lineEdit_2->text().contains(((TProduct*)p[k])->category) && !ui->lineEdit_2->text().contains(((TProduct*)p[k])->description) && !ui->lineEdit_2->text().contains(QString::number(((TProduct*)p[k])->count)) && !ui->lineEdit_2->text().contains(QString::number(((TProduct*)p[k])->price))))
+                        continue;
+                    if (ui->comboBox->currentText() == "Товар")
+                    {
+                        topItem->addChild(itm);
+                        count++;
+                    }
+                    QTreeWidgetItem * product = new QTreeWidgetItem();
+                    // set text to it
+                    product->setText(3, ((TProduct*)p[k])->name + "\n" + QString::number(((TProduct*)p[k])->id) + "\n" + (((TProduct*)p[k])->category) + "\n" + ((TProduct*)p[k])->description + "\n" + QString::number(((TProduct*)p[k])->count) + "\n" + QString::number(((TProduct*)p[k])->price) + "$");
+                    // make it expanded
+                    product->setExpanded(true);
+                    store->addChild(product); // add child
+                }
             }
         }
         // taking top level items
@@ -375,6 +403,11 @@ void MainWindow::on_pushButton_clicked()
             ui->treeWidget->takeTopLevelItem(i);
         // adding top level items
         ui->treeWidget->addTopLevelItem(topItem);
+
+        makeInvisible();
+        ui->treeWidget->setVisible(true);
+
+        successFoundMessage(count);
     }
     if (tab == 51)
     {
@@ -478,7 +511,7 @@ void MainWindow::on_pushButton_clicked()
                 void ** p = (void**)(((TStore*)s[j])->sublev); // go to the next level
                 for (int k = 0; k < ((int*)(p))[POS_CNT];k++) // loop
                 {   // create product item
-                    if (((TProduct*)p[k])->name == ui->lineEdit_2->text() && ((TProduct*)p[k])->id == ui->lineEdit_3->text().toUShort() && (((TProduct*)p[k])->category) == ui->lineEdit_4->text())
+                    if (ui->lineEdit_2->text().contains(((TProduct*)p[k])->name) || ui->lineEdit_2->text().contains(QString::number(((TProduct*)p[k])->id)) || ui->lineEdit_2->text().contains(((TProduct*)p[k])->category) || ui->lineEdit_2->text().contains(((TProduct*)p[k])->description) || ui->lineEdit_2->text().contains(QString::number(((TProduct*)p[k])->count)) || ui->lineEdit_2->text().contains(QString::number(((TProduct*)p[k])->price)))
                     {
                         QTreeWidgetItem * product = new QTreeWidgetItem();
                         // set text to it
@@ -486,6 +519,7 @@ void MainWindow::on_pushButton_clicked()
                         // make it expanded
                         product->setExpanded(true);
                         store->addChild(product); // add child
+                        count++;
                     }
                 }
                 if (store->childCount()!=0)
@@ -498,9 +532,11 @@ void MainWindow::on_pushButton_clicked()
                 topItem->addChild(itm);
             }
 
+
             topItem->setExpanded(true);
             ui->treeWidget->addTopLevelItem(topItem);
         }
+        successFoundMessage(count);
     }
 }
 
@@ -752,7 +788,7 @@ void MainWindow::on_comboBox_currentTextChanged(const QString &arg1)
                 ui->comboBox_2->addItem("null");
         }
     }// if we'd like to find items
-    if (tab == 40)
+    if (tab == 40 || tab == 52)
     {   // searching field
         ui->lineEdit_2->setVisible(true);
         ui->lineEdit_2->setPlaceholderText("Вкажіть пошуковий запит");
@@ -1048,12 +1084,6 @@ void MainWindow::on_action_13_triggered()
     ui->treeWidget->setVisible(true);
 
     ui->scrollArea->setVisible(true);
-
-    showProductEdits();
-
-    ui->lineEdit->setVisible(false);
-    ui->lineEdit_5->setVisible(false);
-    ui->lineEdit_6->setVisible(false);
 
     ui->subheader->setText("Оберіть необхідні міста\n(магазини)");
     // combobox items
